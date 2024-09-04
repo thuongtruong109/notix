@@ -65,9 +65,11 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 
 <!-- ## 📚 Documentation
 
+## 📝 Usage -->
+
 ## 📦 Download
 
-## 📝 Usage -->
+-   [Zip package format](https://thuongtruong109.github.io/notix/notix.zip)
 
 ## 🔨 Development
 
