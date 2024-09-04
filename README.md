@@ -9,9 +9,17 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/thuongtruong1009/notix?color=yellow">
   <img src="https://img.shields.io/badge/manifest-v3-pink" alt="manifest_version_badge" />
   <a href="LICENSE"><img src="https://img.shields.io/github/license/thuongtruong1009/notix" alt="license_badge" /></a>
-  <a href="https://hits.dwyl.com/thuongtruong1009/notix" rel="nofollow"><img src="https://hits.dwyl.com/thuongtruong1009/notix.svg" alt="HitCount" data-canonical-src="https://hits.dwyl.com/thuongtruong1009/notix.svg" style="max-width: 100%;"></a>
+  <!-- <a href="https://hits.dwyl.com/thuongtruong1009/notix" rel="nofollow"><img src="https://hits.dwyl.com/thuongtruong1009/notix.svg" alt="HitCount" style="max-width: 100%;"></a> -->
 
 </div>
+
+![Notix](public/banner.png)
+
+## 📢 About
+
+-   Notix is a simple extension that helps in saving temporary notes. It is built with HTML, CSS and JavaScript based on Chrome manifest verion 3. It is cross-browser compatible extension that means it can be used on any browser.
+
+## 📸 Preview
 
 |                                                              |                                                              |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
@@ -20,33 +28,21 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 | <img src="public/preview5.png" alt="preview5" width="400" /> | <img src="public/preview6.png" alt="preview6" width="400" /> |
 |                                                              |                                                              |
 
-## 📢 About
-
--   Notix is a simple extension that helps in saving temporary notes. It is built with HTML, CSS and JavaScript based on Chrome manifest verion 3. It is cross-browser compatible extension that means it can be used on any browser.
-
-<!-- ## 📚 Documentation
-
-## 📦 Download
-
-## 📝 Usage -->
-
 ## 🎉 What's new
 
-##### _(Not support in <ins>http://localhost</ins> static living for popup)_
-
--   Create new notes, edit note data, delete selected notes, clear text, and dispatch notes data with unlimited storage time
--   Copy note as text, image to the clipboard
--   Export/download notes data as .txt files, .png images
--   Share note via image link
--   Voice to text (only English)
--   Audio reading text
--   Auto save typed note text
--   Not reset data when closing the browser
--   Display notes information (total notes, name - size - total words - total lines - created - last update time of current note, etc.)
--   Cross-browsers compatibility (Chrome, Firefox, Edge, Opera, Brave, etc.)
--   UI/UX friendly (transition, shadow effect, gradient color etc.)
--   Setting options (dark mode, fonts, auto-save, auto-sync, audio-options etc.)
--   Search notes by name
+✔️ Create new notes, edit note data, delete selected notes, clear text, and dispatch notes data with unlimited storage time <br/>
+✔️ Copy note as text, image to the clipboard <br/>
+✔️ Export/download notes data as .txt files, .png images <br/>
+✔️ Share note via image link <br/>
+✔️ Voice to text (only English) <br/>
+✔️ Audio reading text <br/>
+✔️ Auto save typed note text <br/>
+✔️ Not reset data when closing the browser <br/>
+✔️ Display notes information (total notes, name - size - total words - total lines - created - last update time of current note, etc.) <br/>
+✔️ Cross-browsers compatibility (Chrome, Firefox, Edge, Opera, Brave, etc.) <br/>
+✔️ UI/UX friendly (transition, shadow effect, gradient color etc.) <br/>
+✔️ Setting options (dark mode, fonts, auto-save, auto-sync, audio-options etc.) <br/>
+✔️ Search notes by name <br/>
 
 ## 🎯 Todo
 
@@ -67,6 +63,12 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 -   [JavaScript](https://www.w3schools.com/js/)
 -   [Chrome extension](https://developer.chrome.com)
 
+<!-- ## 📚 Documentation
+
+## 📦 Download
+
+## 📝 Usage -->
+
 ## 🔨 Development
 
 -   Star this repository
@@ -74,20 +76,20 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 -   Clone the repository
 
 ```bash
-git clone https://github.com/thuongtruong1009/notix.git
+git clone https://github.com/thuongtruong109/notix.git
 ```
 
 -   **On browser** -> **Settings** -> **Extensions** -> **Developer mode (open $\textcolor{blue}{\text{chrome://extensions/}}$ for chrome)** -> **Load unpacked** -> **Select the cloned folder**
 
 ## 📄 Changelog
 
--   Track experience at [Changelog](https://thuongtruong1009.github.io/notix/changelog.html)
+-   Track development at [Changelog](https://thuongtruong1009.github.io/notix/changelog.html)
 
 ## 🛡️ Credits
 
 This project is licensed under the [GNU General Public v3.0](LICENSE)
 
-Copyright of [@thuongtruong1009](https://github.com/thuongtruong1009), 2023
+Copyright of [@thuongtruong109](https://github.com/thuongtruong109), 2023
 
 ## ❤️ Support me
 
