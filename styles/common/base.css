@@ -7,21 +7,12 @@
     scroll-behavior: smooth;
 }
 
-/* Firefox */
 ::-moz-selection {
-    color: white;
-    background: purple;
-}
-
-/* Safari and Opera */
-::selection {
-    color: white;
-    background: purple;
+    background: rgba(17, 17, 17, 0.1);
 }
 
 ::selection {
-    color: white;
-    background: purple;
+    background: rgba(17, 17, 17, 0.1);
 }
 
 ::-webkit-scrollbar {
@@ -35,12 +26,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #9b1fe899;
+    background: rgba(17, 17, 17, 0.1);
     border-radius: 10rem;
+    cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #9b1fe8;
+    background-color: rgba(17, 17, 17, 0.15);
 }
 
 ul {
