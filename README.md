@@ -43,6 +43,7 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 ✔️ UI/UX friendly (transition, shadow effect, gradient color etc.) <br/>
 ✔️ Setting options (dark mode, fonts, auto-save, auto-sync, audio-options etc.) <br/>
 ✔️ Search notes by name <br/>
+✔️ Real-time sync notes data between tabs <br/>
 
 ## 🎯 Todo
 
@@ -51,7 +52,6 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 -   [ ] Password protection for secret notes
 -   [ ] Detect language translation of note text
 -   [ ] Export/import notes backup data
--   [ ] Real-time sync notes data between tabs
 -   [ ] Insert image to text
 -   [ ] Text editor tool panel
 -   [ ] Localization
