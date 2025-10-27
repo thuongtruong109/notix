@@ -1,15 +1,15 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/thuongtruong1009/notix/main/public/favicon.ico" width="28" height="28" /> $\huge\textcolor{purple}{\text{Notix}}$
+<img src="https://raw.githubusercontent.com/thuongtruong109/notix/main/public/favicon.ico" width="28" height="28" /> $\huge\textcolor{purple}{\text{Notix}}$
 
 $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 
   <img src="https://img.shields.io/badge/w3c-validated-brightgreen" alt="w3c_badge" />
-  <img src="https://img.shields.io/github/languages/code-size/thuongtruong1009/notix" alt="code_size_badge" />
-  <img alt="GitHub release" src="https://img.shields.io/github/v/release/thuongtruong1009/notix?color=yellow">
+  <img src="https://img.shields.io/github/languages/code-size/thuongtruong109/notix" alt="code_size_badge" />
+  <img alt="GitHub release" src="https://img.shields.io/github/v/release/thuongtruong109/notix?color=yellow">
   <img src="https://img.shields.io/badge/manifest-v3-pink" alt="manifest_version_badge" />
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/thuongtruong1009/notix" alt="license_badge" /></a>
-  <!-- <a href="https://hits.dwyl.com/thuongtruong1009/notix" rel="nofollow"><img src="https://hits.dwyl.com/thuongtruong1009/notix.svg" alt="HitCount" style="max-width: 100%;"></a> -->
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/thuongtruong109/notix" alt="license_badge" /></a>
+  <a href="https://hits.dwyl.com/thuongtruong109/notix" rel="nofollow"><img src="https://hits.dwyl.com/thuongtruong109/notix.svg" alt="HitCount" style="max-width: 100%;"></a>
 
 </div>
 
@@ -43,6 +43,7 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 ✔️ UI/UX friendly (transition, shadow effect, gradient color etc.) <br/>
 ✔️ Setting options (dark mode, fonts, auto-save, auto-sync, audio-options etc.) <br/>
 ✔️ Search notes by name <br/>
+✔️ Inline rename note name in edit view — click note name to edit inline (Enter to save, Esc to cancel) <br/>
 ✔️ Real-time sync notes data between tabs <br/>
 
 ## 🎯 Todo

@@ -7,6 +7,7 @@
 -   Real-time sync data between multiple tabs/windows
 -   Storage change listeners for automatic data synchronization
 -   Background script messaging system for cross-tab communication
+-   **Inline rename note name in edit view** - Click on note name to rename directly without UI shift
 
 ### Features
 
@@ -16,12 +17,14 @@
 -   Real-time note title sync in edit view when changed from list view
 -   **Auto Sync toggle in Settings** - Enable/disable real-time sync (default: ON)
 -   Seamless multi-tab editing experience with user control
+-   **Inline note name editing** - Click to edit, press Enter to save, Escape to cancel
 
 ### Changed
 
 -   Enhanced storage module with sync event listeners
 -   Improved background script with change broadcasting
 -   Optimized popup script for better performance with sync functionality
+-   Note name in edit view is now clickable and editable inline
 
 ## [2.1](https://github.com/thuongtruong1009/notix/releases/tag/v2.1) - 2023
 

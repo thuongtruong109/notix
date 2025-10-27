@@ -52,6 +52,13 @@ main > .note_head_panel > p::before {
 main > .note_head_panel #note_name {
     width: fit-content;
     max-width: 100%;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s ease;
+}
+
+main > .note_head_panel #note_name:hover {
+    opacity: 0.7;
 }
 
 main > #note_panel > div {

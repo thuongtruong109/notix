@@ -493,6 +493,85 @@ const dynamicImport = async (path) => {
 
     loadCurrentNoteData()
 
+    // **************** inline rename note name ****************
+    const enableInlineRename = () => {
+        if (!currentNoteData.id) return
+
+        // Create input element
+        let noteNameInput = document.createElement('input')
+        noteNameInput.setAttribute('type', 'text')
+        noteNameInput.setAttribute('maxlength', '50')
+        noteNameInput.setAttribute('required', 'true')
+        noteNameInput.value = currentNoteData.title
+        noteNameInput.style.cssText = `
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            outline: none;
+            width: 100%;
+            cursor: text;
+        `
+
+        // Replace text with input
+        noteName.innerHTML = ''
+        noteName.appendChild(noteNameInput)
+        noteNameInput.focus()
+
+        const saveRename = async () => {
+            let newTitle = noteNameInput.value.trim()
+            if (!newTitle) {
+                newTitle = currentNoteData.title
+            }
+
+            // Update current note data
+            currentNoteData.title = newTitle
+            currentExportName = `notix_${newTitle}`
+
+            // Update in notes list
+            notesList = notesList.map((item) =>
+                item.id === currentNoteData.id
+                    ? { ...item, title: newTitle }
+                    : item
+            )
+
+            // Save to storage
+            await new Promise((resolve) => {
+                dispatchNotesList(resolve)
+            })
+
+            // Update current note in storage
+            dispatchCurrentNote(currentNoteData)
+
+            // Restore text display
+            noteName.innerHTML = ''
+            noteName.innerText = newTitle
+        }
+
+        const cancelRename = () => {
+            noteName.innerHTML = ''
+            noteName.innerText = currentNoteData.title
+        }
+
+        noteNameInput.addEventListener('blur', saveRename)
+        noteNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                noteNameInput.blur()
+            } else if (e.key === 'Escape') {
+                e.preventDefault()
+                cancelRename()
+            }
+        })
+    }
+
+    noteName.addEventListener('click', enableInlineRename)
+    // **************** end inline rename ****************
+
     notePanel.addEventListener('load', () => {
         noteInput.scrollTop = noteInput.scrollHeight
     })
