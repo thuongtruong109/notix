@@ -105,7 +105,6 @@ const dynamicImport = async (path) => {
 
     loadTab((data) => persistCurrentTabStyle(data.tab))
 
-    // Initialize global variables for sync
     let isAutoSave = true
     let isAutoSync = true
     let audioSettings = {
@@ -142,13 +141,10 @@ const dynamicImport = async (path) => {
             }
         }
 
-        // Only sync if autoSync is enabled
         if (!isAutoSync) return
-        console.log('Storage changed detected:', changes)
 
         // Reload notes list if items changed
         if (changes[OBJ_KEYS.ITEMS]) {
-            console.log('Reloading notes list due to items change')
             loadNotesList()
 
             // Also check if current note title was changed
@@ -191,7 +187,6 @@ const dynamicImport = async (path) => {
             }
         }
 
-        // Only sync if autoSync is enabled
         if (!isAutoSync) return
 
         // Reload notes list if items changed
@@ -230,7 +225,7 @@ const dynamicImport = async (path) => {
     let notesList = []
     let removesList = []
 
-    const dispatchNotesList = () => dispatchNotes(notesList)
+    const dispatchNotesList = (cb) => dispatchNotes(notesList, cb)
 
     const listApperanceStyle = () => {
         if (notesList.length > 0) {
@@ -353,7 +348,6 @@ const dynamicImport = async (path) => {
                     dispatchNotesList(resolve)
                 })
 
-                console.log('Title updated and synced:', title)
                 cancelEdit()
             }
         }
