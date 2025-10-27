@@ -114,22 +114,19 @@ const dynamicImport = async (path) => {
         rate: '1',
     }
 
-    // Load auto sync setting
     loadAutoSettings((data) => {
         if (data.auto_settings) {
             isAutoSave = data.auto_settings.autoSave
             isAutoSync =
                 data.auto_settings.autoSync !== undefined
                     ? data.auto_settings.autoSync
-                    : true // default to true
+                    : true // default is true
         }
     })
 
     // **************** Sync data between tabs ****************
 
-    // Listen for storage changes from other tabs - only sync data, not actions
     onStorageChanged((changes) => {
-        // Update autoSync setting if it changed
         if (changes[OBJ_KEYS.AUTO_SETTINGS]) {
             const newSettings = changes[OBJ_KEYS.AUTO_SETTINGS].newValue
             if (newSettings) {
@@ -143,11 +140,9 @@ const dynamicImport = async (path) => {
 
         if (!isAutoSync) return
 
-        // Reload notes list if items changed
         if (changes[OBJ_KEYS.ITEMS]) {
             loadNotesList()
 
-            // Also check if current note title was changed
             if (changes[OBJ_KEYS.ITEMS].newValue && currentNoteData.id) {
                 const updatedNote = changes[OBJ_KEYS.ITEMS].newValue.find(
                     (item) => item.id === currentNoteData.id
@@ -156,7 +151,6 @@ const dynamicImport = async (path) => {
                     updatedNote &&
                     updatedNote.title !== currentNoteData.title
                 ) {
-                    console.log('Current note title changed, updating display')
                     currentNoteData.title = updatedNote.title
                     noteName.innerText = updatedNote.title
                     currentExportName = `notix_${updatedNote.title}`
@@ -164,9 +158,7 @@ const dynamicImport = async (path) => {
             }
         }
 
-        // Reload current note if it changed
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
-            console.log('Reloading current note due to current_data change')
             loadCurrentNoteData()
         }
     })
@@ -189,12 +181,10 @@ const dynamicImport = async (path) => {
 
         if (!isAutoSync) return
 
-        // Reload notes list if items changed
         if (changes[OBJ_KEYS.ITEMS]) {
             console.log('Reloading notes list due to sync message')
             loadNotesList()
 
-            // Also check if current note title was changed
             if (changes[OBJ_KEYS.ITEMS].newValue && currentNoteData.id) {
                 const updatedNote = changes[OBJ_KEYS.ITEMS].newValue.find(
                     (item) => item.id === currentNoteData.id
@@ -213,7 +203,6 @@ const dynamicImport = async (path) => {
             }
         }
 
-        // Reload current note if it changed
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
             console.log('Reloading current note due to sync message')
             loadCurrentNoteData()
@@ -225,7 +214,7 @@ const dynamicImport = async (path) => {
     let notesList = []
     let removesList = []
 
-    const dispatchNotesList = (cb) => dispatchNotes(notesList, cb)
+    const dispatchNotesList = () => dispatchNotes(notesList)
 
     const listApperanceStyle = () => {
         if (notesList.length > 0) {
@@ -343,7 +332,6 @@ const dynamicImport = async (path) => {
                     }
                 })
 
-                // Dispatch changes and wait for completion
                 await new Promise((resolve) => {
                     dispatchNotesList(resolve)
                 })
@@ -463,23 +451,6 @@ const dynamicImport = async (path) => {
 
     let currentExportName = ''
 
-    // const persistNoteBtnStyle = {
-    //     unDone: (order) => {
-    //         images[order].src = ICONS.SAVE_STATE;
-    //         images[order].title = "save";
-    //     }
-
-    // for (let image of images) {
-    //     image.style.opacity = "1";
-    // }
-    // images[0].src = ICONS.CLEAR_STATE;
-    // images[1].src = ICONS.CAPTURE_STATE;
-    // images[2].src = ICONS.DOWNLOAD_IMG_STATE;
-    // images[3].src = ICONS.DOWNLOAD_TEXT_STATE;
-    // images[4].src = ICONS.COPY_STATE;
-    // images[5].src = ICONS.SAVE_STATE;
-    //
-
     const loadCurrentNoteData = () => {
         loadCurrentNote((data) => {
             if (data.current_data) {
@@ -493,7 +464,7 @@ const dynamicImport = async (path) => {
 
     loadCurrentNoteData()
 
-    // **************** inline rename note name ****************
+    // **************** rename note name ****************
     const enableInlineRename = () => {
         if (!currentNoteData.id) return
 
@@ -517,7 +488,6 @@ const dynamicImport = async (path) => {
             cursor: text;
         `
 
-        // Replace text with input
         noteName.innerHTML = ''
         noteName.appendChild(noteNameInput)
         noteNameInput.focus()
@@ -528,26 +498,21 @@ const dynamicImport = async (path) => {
                 newTitle = currentNoteData.title
             }
 
-            // Update current note data
             currentNoteData.title = newTitle
             currentExportName = `notix_${newTitle}`
 
-            // Update in notes list
             notesList = notesList.map((item) =>
                 item.id === currentNoteData.id
                     ? { ...item, title: newTitle }
                     : item
             )
 
-            // Save to storage
             await new Promise((resolve) => {
                 dispatchNotesList(resolve)
             })
 
-            // Update current note in storage
             dispatchCurrentNote(currentNoteData)
 
-            // Restore text display
             noteName.innerHTML = ''
             noteName.innerText = newTitle
         }
@@ -570,7 +535,6 @@ const dynamicImport = async (path) => {
     }
 
     noteName.addEventListener('click', enableInlineRename)
-    // **************** end inline rename ****************
 
     notePanel.addEventListener('load', () => {
         noteInput.scrollTop = noteInput.scrollHeight

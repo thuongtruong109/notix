@@ -1,9 +1,4 @@
 <div align="center">
-
-<img src="https://raw.githubusercontent.com/thuongtruong109/notix/main/public/favicon.ico" width="28" height="28" /> $\huge\textcolor{purple}{\text{Notix}}$
-
-$\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
-
   <img src="https://img.shields.io/badge/w3c-validated-brightgreen" alt="w3c_badge" />
   <img src="https://img.shields.io/github/languages/code-size/thuongtruong109/notix" alt="code_size_badge" />
   <img alt="GitHub release" src="https://img.shields.io/github/v/release/thuongtruong109/notix?color=yellow">
@@ -11,9 +6,9 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
   <a href="LICENSE"><img src="https://img.shields.io/github/license/thuongtruong109/notix" alt="license_badge" /></a>
   <a href="https://hits.dwyl.com/thuongtruong109/notix" rel="nofollow"><img src="https://hits.dwyl.com/thuongtruong109/notix.svg" alt="HitCount" style="max-width: 100%;"></a>
 
+  <img src="./public/banner_dark.png#gh-dark-mode-only" alt="Brand Dark" />
+  <img src="./public/banner_light.png#gh-light-mode-only" alt="Brand Light" />
 </div>
-
-![Notix](public/banner.png)
 
 ## 📢 About
 
@@ -43,7 +38,7 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 ✔️ UI/UX friendly (transition, shadow effect, gradient color etc.) <br/>
 ✔️ Setting options (dark mode, fonts, auto-save, auto-sync, audio-options etc.) <br/>
 ✔️ Search notes by name <br/>
-✔️ Inline rename note name in edit view — click note name to edit inline (Enter to save, Esc to cancel) <br/>
+✔️ Update note data<br/>
 ✔️ Real-time sync notes data between tabs <br/>
 
 ## 🎯 Todo
@@ -82,7 +77,7 @@ $\small\textcolor{purple}{\textit{Saving temporary notes extension}}$
 git clone https://github.com/thuongtruong109/notix.git
 ```
 
--   **On browser** -> **Settings** -> **Extensions** -> **Developer mode (open $\textcolor{blue}{\text{chrome://extensions/}}$ for chrome)** -> **Load unpacked** -> **Select the cloned folder**
+-   **On browser** -> **Settings** -> **Extensions** -> **Developer mode (open [**chrome://extensions/**](chrome://extensions/) for chrome)** -> **Load unpacked** -> **Select the cloned folder**
 
 ## 📄 Changelog
 
