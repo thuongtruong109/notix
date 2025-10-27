@@ -1,171 +1,282 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>Notix</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#ffffff" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="manifest" href="./manifest.json" />
+        <link rel="stylesheet" href="./popup.css" />
+        <meta name="author" content="Tran Nguyen Nguyen Thuong Truong" />
+        <meta name="description" content="Notix" />
+        <link
+            href="https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700"
+            rel="stylesheet"
+            type="text/css"
+        />
+    </head>
 
-<head>
-    <title>Notix</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="./popup.css">
-    <meta name="author" content="Tran Nguyen Nguyen Thuong Truong">
-    <meta name="description" content="Notix">
-    <link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>
-</head>
-
-<body>
-    <main>
-        <header>
-            <nav id="logo">
-                <img src="./icons/icon32.png" alt="logo" width="24" height="24">
-                <h2>Notix</h2>
-            </nav>
-            <div id="home">
-                <img src="./icons/home.svg" alt="home_icon" title="home">
-            </div>
-            <div id="list_header">
-                <h3>Total:<span id="total">0</span></h3>
-                <button class="disabled" id="delete_btn" type="button">
-                    <img src="./icons/delete.svg" alt="delete_icon" title="delete">
-                    <h5>Delete</h5>
-                </button>
-                <button id="new_btn" type="button">
-                    <img src="./icons/new.png" alt="new_icon" title="new">
-                    <h5>New</h5>
-                </button>
-                <button id="search_btn" type="button">
-                    <img src="./icons/search.svg" alt="search_icon" title="search">
-                    <h5>Search</h5>
-                </button>
-                <div id="search_panel">
-                    <input id="search_input" type="search" placeholder="Search..." maxlength="50" required title="search">
-                    <button id="search_close_btn" type="button" title="close">Close</button>
+    <body>
+        <main>
+            <header>
+                <nav id="logo">
+                    <img
+                        src="./icons/icon32.png"
+                        alt="logo"
+                        width="24"
+                        height="24"
+                    />
+                    <h2>Notix</h2>
+                </nav>
+                <div id="home">
+                    <img src="./icons/home.svg" alt="home_icon" title="home" />
                 </div>
-            </div>
-            <ul id="note_header">
-                <li id="settings_btn" title="settings">
-                    <img src="./icons/settings.png" alt="settings_icon" title="settings">
-                </li>
-                <li id="clear" title="clear">
-                    <img src="./icons/clear.png" alt="clear_icon" title="clear">
-                </li>
-                <li id="copy_link" title="copy link">
-                    <img src="./icons/link.png" alt="copy_link_icon" title="copy link">
-                </li>
-                <li id="capture" title="copy screenshot capture">
-                    <img src="./icons/capture.png" alt="capture_icon" title="copy screenshot capture">
-                </li>
-                <li id="download_img" title="export as image">
-                    <img src="./icons/download_image.png" alt="export_img_icon" title="export as image">
-                </li>
-                <li id="download_text" title="export as text">
-                    <img src="./icons/download_text.png" alt="export_text_icon" title="export as text">
-                </li>
-                <li id="copy_text" title="copy text">
-                    <img src="./icons/copy.svg" alt="copy_text_icon" title="copy text">
-                </li>
-                <li id="save" title="save">
-                    <img src="./icons/save.svg" alt="save_icon" title="save">
-                </li>
-            </ul>
-        </header>
+                <div id="list_header">
+                    <h3>Total:<span id="total">0</span></h3>
+                    <button class="disabled" id="delete_btn" type="button">
+                        <img
+                            src="./icons/delete.svg"
+                            alt="delete_icon"
+                            title="delete"
+                        />
+                        <h5>Delete</h5>
+                    </button>
+                    <button id="new_btn" type="button">
+                        <img src="./icons/new.png" alt="new_icon" title="new" />
+                        <h5>New</h5>
+                    </button>
+                    <button id="search_btn" type="button">
+                        <img
+                            src="./icons/search.svg"
+                            alt="search_icon"
+                            title="search"
+                        />
+                        <h5>Search</h5>
+                    </button>
+                    <div id="search_panel">
+                        <input
+                            id="search_input"
+                            type="search"
+                            placeholder="Search..."
+                            maxlength="50"
+                            required
+                            title="search"
+                        />
+                        <button
+                            id="search_close_btn"
+                            type="button"
+                            title="close"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+                <ul id="note_header">
+                    <li id="settings_btn" title="settings">
+                        <img
+                            src="./icons/settings.png"
+                            alt="settings_icon"
+                            title="settings"
+                        />
+                    </li>
+                    <li id="clear" title="clear">
+                        <img
+                            src="./icons/clear.png"
+                            alt="clear_icon"
+                            title="clear"
+                        />
+                    </li>
+                    <li id="copy_link" title="copy link">
+                        <img
+                            src="./icons/link.png"
+                            alt="copy_link_icon"
+                            title="copy link"
+                        />
+                    </li>
+                    <li id="capture" title="copy screenshot capture">
+                        <img
+                            src="./icons/capture.png"
+                            alt="capture_icon"
+                            title="copy screenshot capture"
+                        />
+                    </li>
+                    <li id="download_img" title="export as image">
+                        <img
+                            src="./icons/download_image.png"
+                            alt="export_img_icon"
+                            title="export as image"
+                        />
+                    </li>
+                    <li id="download_text" title="export as text">
+                        <img
+                            src="./icons/download_text.png"
+                            alt="export_text_icon"
+                            title="export as text"
+                        />
+                    </li>
+                    <li id="copy_text" title="copy text">
+                        <img
+                            src="./icons/copy.svg"
+                            alt="copy_text_icon"
+                            title="copy text"
+                        />
+                    </li>
+                    <li id="save" title="save">
+                        <img
+                            src="./icons/save.svg"
+                            alt="save_icon"
+                            title="save"
+                        />
+                    </li>
+                </ul>
+            </header>
 
-        <section id="list_panel">
-            <ul></ul>
-            <figure class="empty_img">
-                <img src="./icons/empty.png" alt="empty_icon">
-                <figcaption>Empty notes here. <span id="new_area_line">Create new now!</span></figcaption>
-            </figure>
-            <figure class="not_found_img">
-                <img src="./icons/not_found.png" alt="not_found_icon">
-                <figcaption>Not found</figcaption>
-            </figure>
+            <section id="list_panel">
+                <ul></ul>
+                <figure class="empty_img">
+                    <img src="./icons/empty.png" alt="empty_icon" />
+                    <figcaption>
+                        Empty notes here.
+                        <span id="new_area_line">Create new now!</span>
+                    </figcaption>
+                </figure>
+                <figure class="not_found_img">
+                    <img src="./icons/not_found.png" alt="not_found_icon" />
+                    <figcaption>Not found</figcaption>
+                </figure>
+            </section>
+
+            <div class="note_head_panel">
+                <p>
+                    <span id="note_name"></span>
+                </p>
+                <ul id="note_control">
+                    <li title="note infomation">
+                        <img
+                            id="note_information"
+                            src="./icons/info.png"
+                            alt="note_informn"
+                            title="note information"
+                        />
+                    </li>
+                    <li title="audio text">
+                        <img
+                            id="audio_text"
+                            src="./icons/mute.png"
+                            alt="audio_text"
+                            title="audio text"
+                        />
+                    </li>
+                    <li title="voice text">
+                        <img
+                            id="voice_text"
+                            src="./icons/voice.png"
+                            alt="voice_text"
+                            title="voice text"
+                        />
+                    </li>
+                </ul>
+            </div>
+            <section id="note_panel">
+                <div>
+                    <textarea id="note" spellcheck="false"></textarea>
+                </div>
+            </section>
+        </main>
+
+        <section id="settings">
+            <div class="settings_header">
+                <h2>Settings</h2>
+                <button
+                    id="close_settings"
+                    type="button"
+                    title="close settings"
+                >
+                    <img src="./icons/close.svg" alt="close_settings" />
+                </button>
+            </div>
+            <div class="settings_content">
+                <ul>
+                    <li>
+                        <span>Auto save</span>
+                        <label class="switch">
+                            <input
+                                id="autosave_setting_toggle"
+                                type="checkbox"
+                                checked
+                            />
+                            <span class="slider"></span>
+                        </label>
+                    </li>
+                    <li>
+                        <span>Auto sync tabs</span>
+                        <label class="switch">
+                            <input
+                                id="autosync_setting_toggle"
+                                type="checkbox"
+                                checked
+                            />
+                            <span class="slider"></span>
+                        </label>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="audio_options">
+                        <span>Choose a voice</span>
+                        <select id="voice"></select>
+                    </li>
+                    <li>
+                        <span>Audio volumn</span>
+                        <input
+                            id="audio_setting_volumn"
+                            type="range"
+                            min="0.1"
+                            max="1"
+                            step="0.1"
+                            value="1"
+                        />
+                    </li>
+                    <li>
+                        <span>Audio pitch</span>
+                        <input
+                            id="audio_setting_pitch"
+                            type="range"
+                            min="0.1"
+                            max="2"
+                            step="0.1"
+                            value="1"
+                        />
+                    </li>
+                    <li>
+                        <span>Audio rate</span>
+                        <input
+                            id="audio_setting_rate"
+                            type="range"
+                            min="0.1"
+                            max="10"
+                            step="0.1"
+                            value="1"
+                        />
+                    </li>
+                </ul>
+            </div>
+            <sub>(Re-open popup to get changes 🥰)</sub>
         </section>
 
-        <div class="note_head_panel">
-            <p>
-                <span id="note_name"></span>
-            </p>
-            <ul id="note_control">
-                <li title="note infomation">
-                    <img id="note_information" src="./icons/info.png" alt="note_informn" title="note information">
-                </li>
-                <li title="audio text">
-                    <img id="audio_text" src="./icons/mute.png" alt="audio_text" title="audio text">
-                </li>
-                <li title="voice text">
-                    <img id="voice_text" src="./icons/voice.png" alt="voice_text" title="voice text">
-                </li>
-            </ul>
-        </div>
-        <section id="note_panel">
-            <div>
-                <textarea id="note" spellcheck="false"></textarea>
+        <div id="modal">
+            <div id="modal_wrapper">
+                <div class="modal_header">
+                    <h3 id="modal_title">Information</h3>
+                    <span class="modal_btn--close">&times;</span>
+                </div>
+                <span></span>
+                <div id="modal_content"></div>
             </div>
-        </section>
-    </main>
-
-    <section id="settings">
-        <div class="settings_header">
-            <h2>Settings</h2>
-            <button id="close_settings" type="button" title="close settings">
-                <img src="./icons/close.svg" alt="close_settings">
-            </button>
         </div>
-        <div class="settings_content">
-            <ul>
-                <li>
-                    <span>Auto save</span>
-                    <label class="switch">
-                        <input id="autosave_setting_toggle" type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </li>
-                <li>
-                    <span>Auto sync tabs</span>
-                    <label class="switch">
-                        <input id="autosync_setting_toggle" type="checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </li>
-            </ul>
-            <ul>
-                <li class="audio_options">
-                    <span>Choose a voice</span>
-                    <select id="voice"></select>
-                </li>
-                <li>
-                    <span>Audio volumn</span>
-                    <input id="audio_setting_volumn" type="range" min="0.1" max="1" step="0.1" value="1" />
-                </li>
-                <li>
-                    <span>Audio pitch</span>
-                    <input id="audio_setting_pitch" type="range" min="0.1" max="2" step="0.1" value="1" />
-                </li>
-                <li>
-                    <span>Audio rate</span>
-                    <input id="audio_setting_rate" type="range" min="0.1" max="10" step="0.1" value="1" />
-                </li>
-            </ul>
-        </div>
-        <sub>(Re-open popup to get changes 🥰)</sub>
-    </section>
 
-    <div id="modal">
-        <div id="modal_wrapper">
-            <div class="modal_header">
-                <h3 id="modal_title">Information</h3>
-                <span class="modal_btn--close">&times;</span>
-            </div>
-            <span></span>
-            <div id="modal_content"></div>
-        </div>
-    </div>
-        
-    <script src="./popup.js"></script>
-    <script src="./modules/scripts/settings.js"></script>
-    <script src="./modules/third-party/domtoimg.js"></script>
-</body>
-
+        <script src="./popup.js"></script>
+        <script src="./modules/scripts/settings.js"></script>
+        <script src="./modules/third-party/domtoimg.js"></script>
+    </body>
 </html>

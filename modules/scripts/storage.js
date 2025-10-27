@@ -1,13 +1,37 @@
-import { OBJ_KEYS } from './variables.js';
+import { OBJ_KEYS } from './variables.js'
 
-export const loadTab = (cb) => chrome.storage.sync.get(OBJ_KEYS.TAB, cb);
-export const dispatchTab = (tab, cb) => chrome.storage.sync.set({ [OBJ_KEYS.TAB]: tab }, cb);
+export const loadTab = (cb) => chrome.storage.sync.get(OBJ_KEYS.TAB, cb)
+export const dispatchTab = (tab, cb) =>
+    chrome.storage.sync.set({ [OBJ_KEYS.TAB]: tab }, cb)
 
-export const loadNotes = (cb) => chrome.storage.sync.get(OBJ_KEYS.ITEMS, cb);
-export const dispatchNotes = (data, cb) => chrome.storage.sync.set({ [OBJ_KEYS.ITEMS]: data }, cb);
+export const loadNotes = (cb) => chrome.storage.sync.get(OBJ_KEYS.ITEMS, cb)
+export const dispatchNotes = (data, cb) =>
+    chrome.storage.sync.set({ [OBJ_KEYS.ITEMS]: data }, cb)
 
-export const loadCurrentNote = (cb) => chrome.storage.sync.get(OBJ_KEYS.CURRENT_DATA, cb);
-export const dispatchCurrentNote = (data, cb) => chrome.storage.sync.set({ [OBJ_KEYS.CURRENT_DATA]: data }, cb);
+export const loadCurrentNote = (cb) =>
+    chrome.storage.sync.get(OBJ_KEYS.CURRENT_DATA, cb)
+export const dispatchCurrentNote = (data, cb) =>
+    chrome.storage.sync.set({ [OBJ_KEYS.CURRENT_DATA]: data }, cb)
 
-export const loadAutoSettings = (cb) => chrome.storage.sync.get(OBJ_KEYS.AUTO_SETTINGS, cb);
-export const loadAudioSettings = (cb) => chrome.storage.sync.get(OBJ_KEYS.AUDIO_SETTINGS, cb);
+export const loadAutoSettings = (cb) =>
+    chrome.storage.sync.get(OBJ_KEYS.AUTO_SETTINGS, cb)
+export const loadAudioSettings = (cb) =>
+    chrome.storage.sync.get(OBJ_KEYS.AUDIO_SETTINGS, cb)
+
+// Listen for storage changes from other tabs
+export const onStorageChanged = (callback) => {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (namespace === 'sync') {
+            callback(changes)
+        }
+    })
+}
+
+// Listen for messages from background script
+export const onSyncMessage = (callback) => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'STORAGE_CHANGED') {
+            callback(message.changes)
+        }
+    })
+}

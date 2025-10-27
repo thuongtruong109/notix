@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.2](https://github.com/thuongtruong1009/notix/releases/tag/v2.2) - 2025
+
+### Added
+
+-   Real-time sync data between multiple tabs/windows
+-   Storage change listeners for automatic data synchronization
+-   Background script messaging system for cross-tab communication
+
+### Features
+
+-   Auto-reload notes list when changes detected from other tabs
+-   Auto-reload current note when modified in another tab
+-   Sync tab state across multiple windows
+-   Real-time note title sync in edit view when changed from list view
+-   **Auto Sync toggle in Settings** - Enable/disable real-time sync (default: ON)
+-   Seamless multi-tab editing experience with user control
+
+### Changed
+
+-   Enhanced storage module with sync event listeners
+-   Improved background script with change broadcasting
+-   Optimized popup script for better performance with sync functionality
+
 ## [2.1](https://github.com/thuongtruong1009/notix/releases/tag/v2.1) - 2023
 
 ### Added
