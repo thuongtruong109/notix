@@ -71,18 +71,89 @@ export const parseMarkdown = (markdown) => {
     html = html.replace(/^---$/gm, '<hr />')
     html = html.replace(/^\*\*\*$/gm, '<hr />')
 
-    // Unordered lists
-    html = html.replace(/^\s*[-*+]\s+(.+)$/gm, '<li>$1</li>')
-    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    // Process lists line by line to properly group consecutive items
+    const lines = html.split('\n')
+    const processedLines = []
+    let inUnorderedList = false
+    let inOrderedList = false
 
-    // Ordered lists
-    html = html.replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>')
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        const isUnorderedItem = /^\s*[-*+]\s+(.+)$/.test(line)
+        const isOrderedItem = /^\s*\d+\.\s+(.+)$/.test(line)
+
+        if (isUnorderedItem) {
+            // Start unordered list if not already in one
+            if (!inUnorderedList) {
+                processedLines.push('<ul>')
+                inUnorderedList = true
+            }
+            // Close ordered list if we were in one
+            if (inOrderedList) {
+                processedLines.push('</ol>')
+                inOrderedList = false
+            }
+            // Add list item
+            const content = line.replace(/^\s*[-*+]\s+(.+)$/, '$1')
+            processedLines.push(`<li>${content}</li>`)
+        } else if (isOrderedItem) {
+            // Start ordered list if not already in one
+            if (!inOrderedList) {
+                processedLines.push('<ol>')
+                inOrderedList = true
+            }
+            // Close unordered list if we were in one
+            if (inUnorderedList) {
+                processedLines.push('</ul>')
+                inUnorderedList = false
+            }
+            // Add list item
+            const content = line.replace(/^\s*\d+\.\s+(.+)$/, '$1')
+            processedLines.push(`<li>${content}</li>`)
+        } else {
+            // Not a list item - close any open lists
+            if (inUnorderedList) {
+                processedLines.push('</ul>')
+                inUnorderedList = false
+            }
+            if (inOrderedList) {
+                processedLines.push('</ol>')
+                inOrderedList = false
+            }
+            // Keep the line as-is (will be processed for line breaks later)
+            processedLines.push(line)
+        }
+    }
+
+    // Close any remaining open lists
+    if (inUnorderedList) {
+        processedLines.push('</ul>')
+    }
+    if (inOrderedList) {
+        processedLines.push('</ol>')
+    }
+
+    // Join with special marker to preserve structure
+    html = processedLines.join('___NEWLINE___')
 
     // Blockquotes
     html = html.replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>')
 
-    // Line breaks
-    html = html.replace(/\n\n/g, '</p><p>')
+    // Replace the special marker with actual newlines, but avoid breaking list structure
+    // First protect list tags from getting line breaks
+    html = html.replace(/<ul>___NEWLINE___/g, '<ul>')
+    html = html.replace(/___NEWLINE___<\/ul>/g, '</ul>')
+    html = html.replace(/<ol>___NEWLINE___/g, '<ol>')
+    html = html.replace(/___NEWLINE___<\/ol>/g, '</ol>')
+    html = html.replace(/<li>([^<]*)<\/li>___NEWLINE___/g, '<li>$1</li>')
+    html = html.replace(/<\/ul>___NEWLINE___/g, '</ul>\n\n')
+    html = html.replace(/<\/ol>___NEWLINE___/g, '</ol>\n\n')
+
+    // Now convert remaining markers to newlines
+    html = html.replace(/___NEWLINE___/g, '\n')
+
+    // Line breaks (double newline = paragraph break, single newline = line break)
+    html = html.replace(/\n\n+/g, '</p><p>')
     html = html.replace(/\n/g, '<br />')
 
     // Wrap in paragraphs

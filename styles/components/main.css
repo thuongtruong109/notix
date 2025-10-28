@@ -17,34 +17,20 @@ main > #note_panel:hover {
 }
 
 main > .note_head_panel {
-    transform: translateY(0.2rem);
-    margin-top: 0.5rem;
-    z-index: 1;
+    margin-top: 0.75rem;
+    margin-bottom: 0.35rem;
     width: 100%;
     height: auto;
+    display: flex;
     justify-content: space-between;
-    align-items: end;
-    padding-left: 2rem;
-    padding-right: 0.5rem;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-main > .note_head_panel > p {
-    border-top-left-radius: 0.35rem;
-    border-top-right-radius: 0.35rem;
-    background-color: var(--milk_white);
-    position: relative;
-    max-width: 50%;
-}
-
-main > .note_head_panel > p::before {
-    content: '';
-    position: absolute;
-    bottom: 0rem;
-    left: 0.25rem;
-    width: calc(100% - 0.4rem);
-    height: 0.3rem;
-    z-index: 2;
-    background-color: var(--milk_white);
+main > .note_head_panel > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 main > .note_head_panel #note_name {
@@ -54,9 +40,8 @@ main > .note_head_panel #note_name {
     user-select: none;
     transition: opacity 0.2s ease;
     padding: 0.25rem 0.5rem;
-    border-top-left-radius: 0.35rem;
-    border-top-right-radius: 0.35rem;
-    box-shadow: inset 3px 3px 4px #d1d9e6, inset -1px -1px 1px #d1d9e6;
+    border-radius: 0.35rem;
+    box-shadow: inset 2px 2px 3px #d1d9e6, inset -1px -1px 1px #d1d9e6;
 }
 
 main > .note_head_panel #note_name:hover {
@@ -123,8 +108,17 @@ main > #list_panel > ul {
 /* Markdown Preview Styles */
 main > #note_panel > div > .markdown-preview {
     overflow-y: auto;
+    overflow-x: hidden;
     font-family: 'Lato', sans-serif;
     color: #333;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+main > #note_panel > div > .markdown-preview.preview-active {
+    background-color: rgba(232, 247, 245, 0.5);
 }
 
 main > #note_panel > div > .markdown-preview h1,
@@ -165,6 +159,33 @@ main > #note_panel > div > .markdown-preview h6 {
 
 main > #note_panel > div > .markdown-preview p {
     margin: 0.5rem 0;
+}
+
+/* Remove top margin from first child and bottom margin from last child to match edit frame */
+main > #note_panel > div > .markdown-preview > *:first-child,
+main > #note_panel > div > .markdown-preview > h1:first-child,
+main > #note_panel > div > .markdown-preview > h2:first-child,
+main > #note_panel > div > .markdown-preview > h3:first-child,
+main > #note_panel > div > .markdown-preview > h4:first-child,
+main > #note_panel > div > .markdown-preview > h5:first-child,
+main > #note_panel > div > .markdown-preview > h6:first-child,
+main > #note_panel > div > .markdown-preview > p:first-child,
+main > #note_panel > div > .markdown-preview > ul:first-child,
+main > #note_panel > div > .markdown-preview > ol:first-child {
+    margin-top: 0;
+}
+
+main > #note_panel > div > .markdown-preview > *:last-child,
+main > #note_panel > div > .markdown-preview > h1:last-child,
+main > #note_panel > div > .markdown-preview > h2:last-child,
+main > #note_panel > div > .markdown-preview > h3:last-child,
+main > #note_panel > div > .markdown-preview > h4:last-child,
+main > #note_panel > div > .markdown-preview > h5:last-child,
+main > #note_panel > div > .markdown-preview > h6:last-child,
+main > #note_panel > div > .markdown-preview > p:last-child,
+main > #note_panel > div > .markdown-preview > ul:last-child,
+main > #note_panel > div > .markdown-preview > ol:last-child {
+    margin-bottom: 0;
 }
 
 main > #note_panel > div > .markdown-preview strong {
@@ -489,7 +510,7 @@ main > #list_panel > ul > li .checkbox_item:checked:after {
     font-size: 13px;
     position: absolute;
     top: -0.25rem;
-    left: 0rem;
+    left: 0;
     color: #959ca2;
 }
 
@@ -551,12 +572,24 @@ main #note_control {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    width: 100%;
-    height: 2rem;
+    width: fit-content;
+    height: 1.7rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    padding: 0 0.25rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1),
+        -1px -1px 3px rgba(255, 255, 255, 0.3);
+    margin-left: auto;
 }
 
 main #note_control li {
-    margin-left: 0.75rem;
+    margin-left: 0;
+    /* padding: 0.2rem 0.4rem; */
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
@@ -567,8 +600,8 @@ main > #list_panel > ul > li .eye_preview_btn {
     left: -1.75rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
     cursor: pointer;
     opacity: 0;
     transition: all 0.3s ease;
@@ -592,21 +625,34 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     transform: translateY(-50%) scale(0.95);
 }
 
-/* Eye icon in note header (edit tab) - placed inside #note_control as a <li> */
-.note_head_panel #note_control li .eye_note_btn {
-    display: inline-block;
-    margin-left: 0.25rem;
-    width: 1.15rem;
-    height: 1.15rem;
-    vertical-align: middle;
+/* Eye icon in note header - placed before note name */
+.note_head_panel .eye_note_btn,
+.note_head_panel #note_eye_icon {
+    width: 1.7rem;
+    height: 1.7rem;
     cursor: pointer;
-    filter: brightness(0) saturate(100%) invert(47%) sepia(89%) saturate(1829%)
-        hue-rotate(158deg) brightness(94%) contrast(101%);
-    transition: transform 0.15s ease, filter 0.15s ease;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    padding: 0.35rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.4rem;
+    background: linear-gradient(145deg, #f0f0f0, #fafafa);
+    box-shadow: 0.5px 0.5px 1.5px rgba(0, 0, 0, 0.04),
+        -0.5px -0.5px 1.5px rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
 }
 
-.note_head_panel #note_control li .eye_note_btn:hover {
-    transform: scale(1.15);
-    filter: brightness(0) saturate(100%) invert(47%) sepia(89%) saturate(1829%)
-        hue-rotate(158deg) brightness(110%) contrast(101%);
+.note_head_panel .eye_note_btn:hover,
+.note_head_panel #note_eye_icon:hover {
+    opacity: 0.85;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05),
+        -1px -1px 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Active state when in preview mode */
+.note_head_panel .eye_note_btn.active,
+.note_head_panel #note_eye_icon.active {
+    opacity: 0.9;
+    background: linear-gradient(145deg, #e8f7f5, #f2fbfa);
+    color: #27ae60 !important;
 }

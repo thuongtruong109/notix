@@ -55,7 +55,27 @@ const setEditorContent = (content) => {
 }
 
 const getEditorText = () => {
-    return noteInput.innerText || noteInput.textContent || ''
+    // Get innerHTML and convert HTML line breaks to plain text line breaks
+    let html = noteInput.innerHTML
+
+    // Replace <br> and <br /> with newlines
+    html = html.replace(/<br\s*\/?>/gi, '\n')
+
+    // Replace closing </div> with newline (contenteditable may use divs for lines)
+    html = html.replace(/<\/div>/gi, '\n')
+
+    // Replace <div> opening tags with nothing (content inside will be kept)
+    html = html.replace(/<div>/gi, '')
+
+    // Remove all other HTML tags
+    html = html.replace(/<[^>]+>/g, '')
+
+    // Decode HTML entities
+    const textarea = document.createElement('textarea')
+    textarea.innerHTML = html
+    html = textarea.value
+
+    return html
 }
 
 const clearEditor = () => {
@@ -75,6 +95,58 @@ const appendToEditor = (text) => {
         selection.addRange(range)
     } else {
         noteInput.appendChild(document.createTextNode(text))
+    }
+}
+
+// Save cursor position in contenteditable
+const saveCursorPosition = () => {
+    const selection = window.getSelection()
+    if (selection.rangeCount === 0) return null
+
+    const range = selection.getRangeAt(0)
+    const preCaretRange = range.cloneRange()
+    preCaretRange.selectNodeContents(noteInput)
+    preCaretRange.setEnd(range.endContainer, range.endOffset)
+    const caretOffset = preCaretRange.toString().length
+
+    return caretOffset
+}
+
+// Restore cursor position in contenteditable
+const restoreCursorPosition = (caretOffset) => {
+    if (caretOffset == null) return
+
+    const selection = window.getSelection()
+    const range = document.createRange()
+
+    let currentOffset = 0
+    let found = false
+
+    const traverseNodes = (node) => {
+        if (found) return
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const nodeLength = node.textContent.length
+            if (currentOffset + nodeLength >= caretOffset) {
+                range.setStart(node, caretOffset - currentOffset)
+                range.setEnd(node, caretOffset - currentOffset)
+                found = true
+                return
+            }
+            currentOffset += nodeLength
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            for (let child of node.childNodes) {
+                traverseNodes(child)
+                if (found) return
+            }
+        }
+    }
+
+    traverseNodes(noteInput)
+
+    if (found) {
+        selection.removeAllRanges()
+        selection.addRange(range)
     }
 }
 
@@ -147,6 +219,7 @@ const dynamicImport = async (path) => {
 
     let isAutoSave = true
     let isAutoSync = true
+    let isLocalSaving = false // flag shared across listeners to prevent reload during local save
     let audioSettings = {
         voice: '0',
         vol: '1',
@@ -199,7 +272,9 @@ const dynamicImport = async (path) => {
         }
 
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
-            loadCurrentNoteData()
+            // Skip reload if this tab just saved the data
+            if (isLocalSaving) return
+            loadCurrentNoteData(true) // preserve cursor when syncing
         }
     })
 
@@ -245,7 +320,9 @@ const dynamicImport = async (path) => {
 
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
             console.log('Reloading current note due to sync message')
-            loadCurrentNoteData()
+            // Skip reload if this tab just saved the data
+            if (isLocalSaving) return
+            loadCurrentNoteData(true) // preserve cursor when syncing
         }
     })
 
@@ -317,6 +394,11 @@ const dynamicImport = async (path) => {
             chrome.storage.sync.set({ current_data: choice })
             loadCurrentNoteData()
             changeTab(OBJ_KEYS.NOTE)
+            if (!isPreviewMode) {
+                setTimeout(() => {
+                    togglePreview()
+                }, 50)
+            }
         }
 
         titleBtn.appendChild(titleBtnSpan)
@@ -515,48 +597,40 @@ const dynamicImport = async (path) => {
 
     let currentExportName = ''
 
-    const loadCurrentNoteData = () => {
+    const loadCurrentNoteData = (preserveCursor = false) => {
+        const savedCursor = preserveCursor ? saveCursorPosition() : null
+
         loadCurrentNote((data) => {
             if (data.current_data) {
                 setEditorContent(data.current_data.content)
                 currentNoteData = data.current_data
                 noteName.innerText = data.current_data.title
                 currentExportName = `notix_${data.current_data.title}`
+
+                // Restore cursor position after content is set
+                if (preserveCursor && savedCursor != null) {
+                    // Use setTimeout to ensure DOM is updated
+                    setTimeout(() => {
+                        restoreCursorPosition(savedCursor)
+                    }, 0)
+                }
             }
         })
     }
 
     loadCurrentNoteData()
 
-    // Create eye icon in note header (edit tab) outside the <p> (append into #note_control as a li)
-    ;(function createNoteHeaderEye() {
-        const noteControl = document.getElementById('note_control')
-        if (!noteControl) return
-
-        // create li container to keep markup consistent with other header controls
-        let li = document.createElement('li')
-        li.setAttribute('title', 'preview')
-
-        let noteEye = document.createElement('img')
-        noteEye.setAttribute('src', './icons/eye.svg')
-        noteEye.classList.add('eye_note_btn')
-        noteEye.setAttribute('title', 'preview')
-
-        // clicking the eye toggles markdown preview for current note
-        noteEye.onclick = () => {
+    let noteEyeIcon = document.getElementById('note_eye_icon')
+    if (noteEyeIcon) {
+        noteEyeIcon.onclick = () => {
             if (!currentNoteData || !currentNoteData.id) return
             togglePreview()
         }
+    }
 
-        li.appendChild(noteEye)
-        // append the eye as the first control in the note control list
-        noteControl.insertBefore(li, noteControl.firstChild)
-    })()
-    // **************** rename note name ****************
     const enableInlineRename = () => {
         if (!currentNoteData.id) return
 
-        // Create input element
         let noteNameInput = document.createElement('input')
         noteNameInput.setAttribute('type', 'text')
         noteNameInput.setAttribute('maxlength', '50')
@@ -667,12 +741,25 @@ const dynamicImport = async (path) => {
 
     autoSave()
 
+    // Debounce auto-save to avoid multiple pending saves
+    let autoSaveTimeout = null
+
     // Use 'input' event for contenteditable
     noteInput.addEventListener('input', async () => {
         await autoSave()
         if (isAutoSave) {
-            setTimeout(() => {
+            // Clear previous timeout to debounce
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout)
+            }
+
+            autoSaveTimeout = setTimeout(() => {
+                isLocalSaving = true
                 saveData()
+                // Clear flag after a short delay to allow storage event to pass
+                setTimeout(() => {
+                    isLocalSaving = false
+                }, 100)
             }, 1000)
         }
 
@@ -692,18 +779,48 @@ const dynamicImport = async (path) => {
         }
     }
 
+    // Store cursor position when switching to preview mode
+    let savedCursorBeforePreview = null
+
     const togglePreview = () => {
         isPreviewMode = !isPreviewMode
 
         if (isPreviewMode) {
+            // Save cursor position before switching to preview
+            savedCursorBeforePreview = saveCursorPosition()
             noteInput.style.display = 'none'
             markdownPreview.style.display = 'block'
+            markdownPreview.classList.add('preview-active')
             updateMarkdownPreview()
             if (previewToggle) previewToggle.classList.add('active')
+            // Update eye icon to show active preview state
+            if (noteEyeIcon) noteEyeIcon.classList.add('active')
         } else {
             noteInput.style.display = 'block'
             markdownPreview.style.display = 'none'
+            markdownPreview.classList.remove('preview-active')
             if (previewToggle) previewToggle.classList.remove('active')
+            // Update eye icon to show edit state
+            if (noteEyeIcon) noteEyeIcon.classList.remove('active')
+
+            // Restore cursor position after switching back to edit
+            if (savedCursorBeforePreview != null) {
+                // Use setTimeout to ensure DOM is ready
+                setTimeout(() => {
+                    restoreCursorPosition(savedCursorBeforePreview)
+                    noteInput.focus() // explicitly focus the editor
+                }, 0)
+            } else {
+                // If no saved position, just focus the editor
+                noteInput.focus()
+            }
+        }
+    }
+
+    // Click on preview to switch back to edit mode
+    markdownPreview.onclick = () => {
+        if (isPreviewMode) {
+            togglePreview()
         }
     }
 
