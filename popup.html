@@ -148,9 +148,16 @@
             </section>
 
             <div class="note_head_panel">
-                <p>
+                <div>
+                    <img
+                        src="./icons/edit.svg"
+                        alt="preview_toggle"
+                        title="Edit Mode - Click to Preview"
+                        id="note_eye_icon"
+                        class="eye_note_btn"
+                    />
                     <span id="note_name"></span>
-                </p>
+                </div>
                 <ul id="note_control">
                     <li title="note infomation">
                         <img
@@ -180,7 +187,13 @@
             </div>
             <section id="note_panel">
                 <div>
-                    <textarea id="note" spellcheck="false"></textarea>
+                    <div
+                        id="note"
+                        contenteditable="true"
+                        spellcheck="false"
+                        data-placeholder="Type your note here..."
+                    ></div>
+                    <div id="markdown_preview" class="markdown-preview"></div>
                 </div>
             </section>
         </main>
@@ -261,7 +274,6 @@
                     </li>
                 </ul>
             </div>
-            <sub>(Re-open popup to get changes 🥰)</sub>
         </section>
 
         <div id="modal">
@@ -275,6 +287,7 @@
             </div>
         </div>
 
+        <script src="./modules/scripts/modal.js"></script>
         <script src="./popup.js"></script>
         <script src="./modules/scripts/settings.js"></script>
         <script src="./modules/third-party/domtoimg.js"></script>

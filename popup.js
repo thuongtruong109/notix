@@ -27,6 +27,8 @@ let logo = document.getElementById('logo'),
         '#list_header > #search_panel > #search_close_btn'
     ),
     noteInput = document.getElementById('note'),
+    markdownPreview = document.getElementById('markdown_preview'),
+    previewToggle = document.getElementById('preview_toggle'),
     settingsBtn = document.getElementById('settings_btn'),
     clearBtn = document.getElementById('clear'),
     copyLinkBtn = document.getElementById('copy_link'),
@@ -40,6 +42,113 @@ let logo = document.getElementById('logo'),
     voiceTextBtn = document.getElementById('voice_text'),
     audioTextBtn = document.getElementById('audio_text'),
     settings = document.getElementById('settings')
+
+let isPreviewMode = false
+
+// Helper functions for contenteditable
+const getEditorContent = () => {
+    return noteInput.innerHTML
+}
+
+const setEditorContent = (content) => {
+    noteInput.innerHTML = content
+}
+
+const getEditorText = () => {
+    // Get innerHTML and convert HTML line breaks to plain text line breaks
+    let html = noteInput.innerHTML
+
+    // Replace <br> and <br /> with newlines
+    html = html.replace(/<br\s*\/?>/gi, '\n')
+
+    // Replace closing </div> with newline (contenteditable may use divs for lines)
+    html = html.replace(/<\/div>/gi, '\n')
+
+    // Replace <div> opening tags with nothing (content inside will be kept)
+    html = html.replace(/<div>/gi, '')
+
+    // Remove all other HTML tags
+    html = html.replace(/<[^>]+>/g, '')
+
+    // Decode HTML entities
+    const textarea = document.createElement('textarea')
+    textarea.innerHTML = html
+    html = textarea.value
+
+    return html
+}
+
+const clearEditor = () => {
+    noteInput.innerHTML = ''
+}
+
+const appendToEditor = (text) => {
+    const selection = window.getSelection()
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0)
+        range.deleteContents()
+        const textNode = document.createTextNode(text)
+        range.insertNode(textNode)
+        range.setStartAfter(textNode)
+        range.setEndAfter(textNode)
+        selection.removeAllRanges()
+        selection.addRange(range)
+    } else {
+        noteInput.appendChild(document.createTextNode(text))
+    }
+}
+
+// Save cursor position in contenteditable
+const saveCursorPosition = () => {
+    const selection = window.getSelection()
+    if (selection.rangeCount === 0) return null
+
+    const range = selection.getRangeAt(0)
+    const preCaretRange = range.cloneRange()
+    preCaretRange.selectNodeContents(noteInput)
+    preCaretRange.setEnd(range.endContainer, range.endOffset)
+    const caretOffset = preCaretRange.toString().length
+
+    return caretOffset
+}
+
+// Restore cursor position in contenteditable
+const restoreCursorPosition = (caretOffset) => {
+    if (caretOffset == null) return
+
+    const selection = window.getSelection()
+    const range = document.createRange()
+
+    let currentOffset = 0
+    let found = false
+
+    const traverseNodes = (node) => {
+        if (found) return
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const nodeLength = node.textContent.length
+            if (currentOffset + nodeLength >= caretOffset) {
+                range.setStart(node, caretOffset - currentOffset)
+                range.setEnd(node, caretOffset - currentOffset)
+                found = true
+                return
+            }
+            currentOffset += nodeLength
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            for (let child of node.childNodes) {
+                traverseNodes(child)
+                if (found) return
+            }
+        }
+    }
+
+    traverseNodes(noteInput)
+
+    if (found) {
+        selection.removeAllRanges()
+        selection.addRange(range)
+    }
+}
 
 const tabListStyle = () => {
     listHeader.style.display = 'flex'
@@ -79,6 +188,9 @@ const dynamicImport = async (path) => {
     let calLastUpdate = contentHelpers.calLastUpdate
     let exportToImage = contentHelpers.exportToImage
 
+    const contentMarkdown = await dynamicImport('./modules/scripts/markdown.js')
+    let parseMarkdown = contentMarkdown.parseMarkdown
+
     const contentStorage = await dynamicImport('./modules/scripts/storage.js')
     let loadTab = contentStorage.loadTab
     let dispatchTab = contentStorage.dispatchTab
@@ -107,6 +219,7 @@ const dynamicImport = async (path) => {
 
     let isAutoSave = true
     let isAutoSync = true
+    let isLocalSaving = false // flag shared across listeners to prevent reload during local save
     let audioSettings = {
         voice: '0',
         vol: '1',
@@ -159,7 +272,9 @@ const dynamicImport = async (path) => {
         }
 
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
-            loadCurrentNoteData()
+            // Skip reload if this tab just saved the data
+            if (isLocalSaving) return
+            loadCurrentNoteData(true) // preserve cursor when syncing
         }
     })
 
@@ -205,7 +320,9 @@ const dynamicImport = async (path) => {
 
         if (changes[OBJ_KEYS.CURRENT_DATA]) {
             console.log('Reloading current note due to sync message')
-            loadCurrentNoteData()
+            // Skip reload if this tab just saved the data
+            if (isLocalSaving) return
+            loadCurrentNoteData(true) // preserve cursor when syncing
         }
     })
 
@@ -213,6 +330,8 @@ const dynamicImport = async (path) => {
 
     let notesList = []
     let removesList = []
+    // version token to avoid race conditions when loading notes concurrently
+    let notesLoadVersion = 0
 
     const dispatchNotesList = () => dispatchNotes(notesList)
 
@@ -261,6 +380,8 @@ const dynamicImport = async (path) => {
         let newItem = document.createElement('li')
         newItem.setAttribute('id', id)
 
+        // Note: eye preview icon moved to note header (edit tab)
+
         let titleBtn = document.createElement('button')
         titleBtn.setAttribute('type', 'button')
 
@@ -273,6 +394,11 @@ const dynamicImport = async (path) => {
             chrome.storage.sync.set({ current_data: choice })
             loadCurrentNoteData()
             changeTab(OBJ_KEYS.NOTE)
+            if (!isPreviewMode) {
+                setTimeout(() => {
+                    togglePreview()
+                }, 50)
+            }
         }
 
         titleBtn.appendChild(titleBtnSpan)
@@ -371,16 +497,36 @@ const dynamicImport = async (path) => {
     }
 
     const loadNotesList = async () => {
+        // bump version to mark this load as the latest
+        notesLoadVersion += 1
+        const thisVersion = notesLoadVersion
+
+        // clear current list UI immediately
         list.innerHTML = ''
-        await loadNotes((data) => {
-            if (data.items) {
-                for (let item of data.items) {
-                    list.appendChild(createNewNote(item.id, item.title))
+
+        await new Promise((resolve) => {
+            loadNotes((data) => {
+                // if another load was started after this one, ignore this callback
+                if (thisVersion !== notesLoadVersion) {
+                    resolve()
+                    return
                 }
-                notesList = data.items
-                total.innerText = notesList.length
-            }
-            listApperanceStyle()
+
+                if (data && data.items && Array.isArray(data.items)) {
+                    for (let item of data.items) {
+                        list.appendChild(createNewNote(item.id, item.title))
+                    }
+                    notesList = data.items
+                    total.innerText = notesList.length
+                } else {
+                    notesList = []
+                    total.innerText = 0
+                }
+
+                // ensure layout updated
+                listApperanceStyle()
+                resolve()
+            })
         })
     }
 
@@ -451,24 +597,46 @@ const dynamicImport = async (path) => {
 
     let currentExportName = ''
 
-    const loadCurrentNoteData = () => {
+    const loadCurrentNoteData = (preserveCursor = false) => {
+        const savedCursor = preserveCursor ? saveCursorPosition() : null
+
         loadCurrentNote((data) => {
             if (data.current_data) {
-                noteInput.value = data.current_data.content
+                setEditorContent(data.current_data.content)
                 currentNoteData = data.current_data
                 noteName.innerText = data.current_data.title
                 currentExportName = `notix_${data.current_data.title}`
+
+                // Restore cursor position after content is set
+                if (preserveCursor && savedCursor != null) {
+                    // Use setTimeout to ensure DOM is updated
+                    setTimeout(() => {
+                        restoreCursorPosition(savedCursor)
+                    }, 0)
+                }
             }
         })
     }
 
     loadCurrentNoteData()
 
-    // **************** rename note name ****************
+    let noteEyeIcon = document.getElementById('note_eye_icon')
+    if (noteEyeIcon) {
+        // Set initial icon based on current mode (default is edit mode)
+        if (!isPreviewMode) {
+            noteEyeIcon.src = './icons/edit.svg'
+            noteEyeIcon.title = 'Edit Mode - Click to Preview'
+        }
+
+        noteEyeIcon.onclick = () => {
+            if (!currentNoteData || !currentNoteData.id) return
+            togglePreview()
+        }
+    }
+
     const enableInlineRename = () => {
         if (!currentNoteData.id) return
 
-        // Create input element
         let noteNameInput = document.createElement('input')
         noteNameInput.setAttribute('type', 'text')
         noteNameInput.setAttribute('maxlength', '50')
@@ -549,7 +717,7 @@ const dynamicImport = async (path) => {
     }
 
     const saveData = () => {
-        currentNoteData.content = noteInput.value
+        currentNoteData.content = getEditorContent()
         currentNoteData.lastUpdate = Date.now()
 
         dispatchCurrentNote(currentNoteData, () => {
@@ -579,20 +747,112 @@ const dynamicImport = async (path) => {
 
     autoSave()
 
-    noteInput.oninput = async () => {
+    // Debounce auto-save to avoid multiple pending saves
+    let autoSaveTimeout = null
+
+    // Use 'input' event for contenteditable
+    noteInput.addEventListener('input', async () => {
         await autoSave()
         if (isAutoSave) {
-            setTimeout(() => {
+            // Clear previous timeout to debounce
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout)
+            }
+
+            autoSaveTimeout = setTimeout(() => {
+                isLocalSaving = true
                 saveData()
+                // Clear flag after a short delay to allow storage event to pass
+                setTimeout(() => {
+                    isLocalSaving = false
+                }, 100)
             }, 1000)
-        } else {
-            return false
+        }
+
+        // Auto-update markdown preview
+        if (isPreviewMode) {
+            updateMarkdownPreview()
+        }
+    })
+
+    // **************** Markdown Preview ****************
+
+    const updateMarkdownPreview = () => {
+        if (markdownPreview && noteInput) {
+            const markdownContent = getEditorText()
+            const htmlContent = parseMarkdown(markdownContent)
+            markdownPreview.innerHTML = htmlContent
         }
     }
 
+    // Store cursor position when switching to preview mode
+    let savedCursorBeforePreview = null
+
+    const togglePreview = () => {
+        isPreviewMode = !isPreviewMode
+
+        if (isPreviewMode) {
+            // Save cursor position before switching to preview
+            savedCursorBeforePreview = saveCursorPosition()
+            noteInput.style.display = 'none'
+            markdownPreview.style.display = 'block'
+            markdownPreview.classList.add('preview-active')
+            updateMarkdownPreview()
+            if (previewToggle) previewToggle.classList.add('active')
+            // Update eye icon to show active preview state
+            if (noteEyeIcon) {
+                noteEyeIcon.classList.add('active')
+                noteEyeIcon.src = './icons/eye.png'
+                noteEyeIcon.title = 'Preview Mode - Click to Edit'
+            }
+        } else {
+            noteInput.style.display = 'block'
+            markdownPreview.style.display = 'none'
+            markdownPreview.classList.remove('preview-active')
+            if (previewToggle) previewToggle.classList.remove('active')
+            // Update icon to show edit state (pencil icon)
+            if (noteEyeIcon) {
+                noteEyeIcon.classList.remove('active')
+                noteEyeIcon.src = './icons/edit.svg'
+                noteEyeIcon.title = 'Edit Mode - Click to Preview'
+            }
+
+            // Restore cursor position after switching back to edit
+            if (savedCursorBeforePreview != null) {
+                // Use setTimeout to ensure DOM is ready
+                setTimeout(() => {
+                    restoreCursorPosition(savedCursorBeforePreview)
+                    noteInput.focus() // explicitly focus the editor
+                }, 0)
+            } else {
+                // If no saved position, just focus the editor
+                noteInput.focus()
+            }
+        }
+    }
+
+    // Click on preview to switch back to edit mode
+    markdownPreview.onclick = () => {
+        if (isPreviewMode) {
+            togglePreview()
+        }
+    }
+
+    // previewToggle element was removed from DOM - guard any reference
+    if (previewToggle) {
+        previewToggle.onclick = () => {
+            togglePreview()
+        }
+    }
+
+    // Initialize preview as hidden
+    markdownPreview.style.display = 'none'
+
+    // **************** Clear & Export ****************
+
     clearBtn.onclick = () => {
         chrome.storage.sync.remove(OBJ_KEYS.CURRENT_DATA, () => {
-            noteInput.value = ''
+            clearEditor()
             currentNoteData.content = ''
             currentNoteData.lastUpdate = Date.now()
             updateNoteById()
@@ -605,7 +865,7 @@ const dynamicImport = async (path) => {
         element.setAttribute(
             'href',
             'data:text/plain;charset=utf-8,' +
-                encodeURIComponent(noteInput.value)
+                encodeURIComponent(getEditorText())
         )
         element.setAttribute('download', `${currentExportName}.txt`)
 
@@ -620,7 +880,7 @@ const dynamicImport = async (path) => {
     }
 
     copyTextBtn.onclick = () => {
-        let note = noteInput.value
+        let note = noteInput.innerText || noteInput.textContent
         navigator.clipboard.writeText(note).then(
             () => {
                 images[6].src = ICONS.DONE_STATE
@@ -631,24 +891,6 @@ const dynamicImport = async (path) => {
             }
         )
     }
-
-    // paste image to note
-
-    // document.onpaste = function (event) {
-    //     var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-    //     console.log(JSON.stringify(items));
-    //     for (var index in items) {
-    //         var item = items[index];
-    //         if (item.kind === 'file') {
-    //             var blob = item.getAsFile();
-    //             var reader = new FileReader();
-    //             reader.onload = function (event) {
-    //                 console.log(event.target.result);
-    //             };
-    //             reader.readAsDataURL(blob);
-    //         }
-    //     }
-    // };
 
     copyLinkBtn.onclick = () => {
         header.style.display = 'none'
@@ -706,39 +948,73 @@ const dynamicImport = async (path) => {
         })
     }
 
-    // note information
+    // ========== Note Information Modal ==========
+    // Create reusable modal instance for note statistics
+    let statsModal = null
+
+    const initStatsModal = () => {
+        if (!statsModal) {
+            statsModal = new Modal({
+                id: 'stats-modal',
+                title: 'Note Statistics',
+                content: '',
+            })
+        }
+    }
+
     noteInformation.onclick = async () => {
-        let totalLines =
-            noteInput.value === '' ? 0 : noteInput.value.split('\n').length
-        let totalWords = noteInput.value.trim().split(/[\s]+/).length
-        let totalSizes = new Blob([noteInput.value]).size / 1000 + ' kb'
-        let lastUpdate = calLastUpdate(currentNoteData.lastUpdate)
+        initStatsModal()
 
-        let modalContent = document.getElementById('modal_content')
+        // Calculate statistics
+        const editorText = getEditorText()
+        const editorContent = getEditorContent()
 
-        modalContent.innerHTML = `<ul>
-            <li><span>Total lines: </span>${totalLines}</li>
-            <li><span>Total words: </span>${totalWords}</li>
-            <li><span>Total size: </span>${totalSizes}</li>
-            <li><span>Last update: </span>${lastUpdate}</li>
-        </ul>`
+        // Lines: count actual line breaks
+        const totalLines = editorText === '' ? 0 : editorText.split('\n').length
 
-        let title = document.getElementById('modal_title')
-        title.innerText = 'Statistics'
+        // Words: split by whitespace and filter empty strings
+        const words = editorText
+            .trim()
+            .split(/\s+/)
+            .filter((w) => w.length > 0)
+        const totalWords = editorText.trim() === '' ? 0 : words.length
 
-        let modal = document.getElementById('modal')
-        modal.classList.add(OBJ_KEYS.ACTIVE_CLASS)
+        // Characters: count all characters including spaces
+        const totalChars = editorText.length
 
-        var closeBtn = document.getElementsByClassName('modal_btn--close')[0]
-        closeBtn.onclick = () => {
-            modal.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
-        }
+        // Size: calculate actual byte size
+        const totalSize = (new Blob([editorText]).size / 1024).toFixed(2)
 
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
-            }
-        }
+        const lastUpdate = calLastUpdate(currentNoteData.lastUpdate)
+
+        // Build enhanced content with better structure
+        const content = `
+            <ul>
+                <li>
+                    <span>Lines</span>
+                    <span>${totalLines}</span>
+                </li>
+                <li>
+                    <span>Words</span>
+                    <span>${totalWords}</span>
+                </li>
+                <li>
+                    <span>Characters</span>
+                    <span>${totalChars}</span>
+                </li>
+                <li>
+                    <span>Size</span>
+                    <span>${totalSize} KB</span>
+                </li>
+                <li>
+                    <span>Last Updated</span>
+                    <span>${lastUpdate}</span>
+                </li>
+            </ul>
+        `
+
+        statsModal.setContent(content)
+        statsModal.open()
     }
 
     // audio text
@@ -768,7 +1044,7 @@ const dynamicImport = async (path) => {
             audioTextBtn.src = ICONS.AUDIO_STATE
             audioTextBtn.title = 'audio text'
             msg.voice = speechSynthesis.getVoices()[audioSettings.voice]
-            msg.text = noteInput.value
+            msg.text = getEditorText()
             msg.volume = audioSettings.vol
             msg.pitch = audioSettings.pitch
             msg.rate = audioSettings.rate
@@ -802,7 +1078,7 @@ const dynamicImport = async (path) => {
                         recognition.onresult = (event) => {
                             const result =
                                 event.results[event.resultIndex][0].transcript
-                            noteInput.value += result
+                            appendToEditor(result)
                         }
 
                         // recognition.onresult = function(event) {
@@ -825,7 +1101,7 @@ const dynamicImport = async (path) => {
                         recognition.start()
                         voiceTextBtn.src = ICONS.RECORDING_STATE
                         voiceTextBtn.title = 'recording'
-                        noteInput.value += ' '
+                        appendToEditor(' ')
 
                         voiceTextBtn.onclick = () => {
                             recognition.stop()

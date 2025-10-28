@@ -13,7 +13,7 @@
 		tspan { white-space:pre }
 		.s0 { fill: #f2f2f2 }
 		.t1 { font-size: 42px;fill: #444444;font-weight: 600;font-family: "Poppins-SemiBold", "Poppins" }
-		.t2 { font-size: 10px;fill: #444444;font-weight: 400;font-family: "Poppins-Regular", "Poppins" }
+		.t2 { font-size: 8px;fill: #444444;font-weight: 400;font-family: "Noto" }
 		.s3 { fill: none;stroke: #ff61d6;stroke-miterlimit:10;stroke-width: .4 }
 		.s4 { fill: none;stroke: #61caff;stroke-miterlimit:10;stroke-width: .7 }
 		.s5 { fill: #61caff }
@@ -31,7 +31,7 @@
 </tspan>
 				</text>
 				<text id="A simple extension that helps in" style="opacity: .8;transform: matrix(2,0,0,2,494.299,468.818)" >
-					<tspan x="0" y="0" class="t2">Instant thoughts, lasting clarity
+					<tspan x="85" y="0" class="t2">Instant thoughts, lasting clarity
 </tspan>
 				</text>
 			</g>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Test Image Paste Feature</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 800px;
+                margin: 50px auto;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+
+            .container {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h1 {
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .instructions {
+                background: #e3f2fd;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #2196f3;
+            }
+
+            .instructions h3 {
+                margin-top: 0;
+                color: #1976d2;
+            }
+
+            textarea {
+                width: 100%;
+                min-height: 300px;
+                padding: 15px;
+                font-family: 'Courier New', monospace;
+                font-size: 14px;
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                resize: vertical;
+                box-sizing: border-box;
+            }
+
+            textarea:focus {
+                outline: none;
+                border-color: #2196f3;
+            }
+
+            .info {
+                margin-top: 15px;
+                padding: 10px;
+                background: #fff3cd;
+                border-radius: 5px;
+                border-left: 4px solid #ffc107;
+            }
+
+            button {
+                margin-top: 10px;
+                padding: 10px 20px;
+                background: #2196f3;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            button:hover {
+                background: #1976d2;
+            }
+
+            #preview {
+                margin-top: 20px;
+                padding: 15px;
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                min-height: 100px;
+            }
+
+            #preview img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 5px;
+                margin: 10px 0;
+            }
+
+            .status {
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 5px;
+                display: none;
+            }
+
+            .status.success {
+                background: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+                display: block;
+            }
+
+            .status.error {
+                background: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🖼️ Image Paste Feature Test</h1>
+            <p>
+                Test the Ctrl+V image paste functionality before deploying to
+                the extension.
+            </p>
+
+            <div class="instructions">
+                <h3>How to Test:</h3>
+                <ol>
+                    <li>
+                        Copy an image to your clipboard:
+                        <ul>
+                            <li>
+                                Take a screenshot (Win+Shift+S on Windows,
+                                Cmd+Shift+4 on Mac)
+                            </li>
+                            <li>
+                                Right-click an image on a webpage and select
+                                "Copy Image"
+                            </li>
+                            <li>Copy an image from an image editor</li>
+                        </ul>
+                    </li>
+                    <li>Click inside the textarea below</li>
+                    <li>
+                        Press <strong>Ctrl+V</strong> (or
+                        <strong>Cmd+V</strong> on Mac)
+                    </li>
+                    <li>
+                        The image should be inserted as markdown with base64
+                        encoding
+                    </li>
+                    <li>Click "Preview Images" to see the rendered output</li>
+                </ol>
+            </div>
+
+            <label for="noteInput"
+                ><strong>Note Content (paste images here):</strong></label
+            >
+            <textarea
+                id="noteInput"
+                placeholder="Type your note here or paste an image using Ctrl+V..."
+            ></textarea>
+
+            <div id="status" class="status"></div>
+
+            <button onclick="previewImages()">👁️ Preview Images</button>
+            <button onclick="clearContent()">🗑️ Clear</button>
+            <button onclick="copyToClipboard()">📋 Copy Content</button>
+
+            <div class="info">
+                <strong>Note:</strong> Images are stored as base64 data URLs.
+                Large images will create very long text strings.
+            </div>
+
+            <h3>Preview:</h3>
+            <div id="preview">
+                <em
+                    >Preview will appear here after clicking "Preview
+                    Images"</em
+                >
+            </div>
+        </div>
+
+        <script>
+            const noteInput = document.getElementById('noteInput')
+            const statusDiv = document.getElementById('status')
+            const previewDiv = document.getElementById('preview')
+
+            // Image paste functionality
+            noteInput.addEventListener('paste', function (event) {
+                const items = (
+                    event.clipboardData || event.originalEvent.clipboardData
+                ).items
+
+                for (let index in items) {
+                    const item = items[index]
+
+                    // Check if the clipboard item is an image
+                    if (
+                        item.kind === 'file' &&
+                        item.type.indexOf('image') !== -1
+                    ) {
+                        event.preventDefault() // Prevent default paste behavior
+
+                        const blob = item.getAsFile()
+                        const reader = new FileReader()
+
+                        reader.onload = function (event) {
+                            const base64Image = event.target.result
+                            const cursorPosition = noteInput.selectionStart
+                            const textBefore = noteInput.value.substring(
+                                0,
+                                cursorPosition
+                            )
+                            const textAfter =
+                                noteInput.value.substring(cursorPosition)
+
+                            // Insert image as markdown format with base64 data
+                            const imageMarkdown = `\n![Pasted Image](${base64Image})\n`
+                            noteInput.value =
+                                textBefore + imageMarkdown + textAfter
+
+                            // Set cursor position after the inserted image
+                            const newCursorPosition =
+                                cursorPosition + imageMarkdown.length
+                            noteInput.setSelectionRange(
+                                newCursorPosition,
+                                newCursorPosition
+                            )
+
+                            // Show success message
+                            showStatus(
+                                '✅ Image pasted successfully!',
+                                'success'
+                            )
+
+                            // Auto-preview
+                            setTimeout(() => previewImages(), 500)
+                        }
+
+                        reader.onerror = function () {
+                            showStatus('❌ Error reading image file', 'error')
+                        }
+
+                        reader.readAsDataURL(blob)
+                        break // Only process the first image
+                    }
+                }
+            })
+
+            function showStatus(message, type) {
+                statusDiv.textContent = message
+                statusDiv.className = `status ${type}`
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        statusDiv.style.display = 'none'
+                    }, 3000)
+                }
+            }
+
+            function previewImages() {
+                const content = noteInput.value
+
+                // Convert markdown image syntax to HTML
+                const htmlContent = content.replace(
+                    /!\[([^\]]*)\]\(([^)]+)\)/g,
+                    '<img src="$2" alt="$1" />'
+                )
+
+                // Replace line breaks with <br>
+                const formattedContent = htmlContent.replace(/\n/g, '<br>')
+
+                previewDiv.innerHTML =
+                    formattedContent || '<em>No content to preview</em>'
+                showStatus('✅ Preview updated', 'success')
+            }
+
+            function clearContent() {
+                noteInput.value = ''
+                previewDiv.innerHTML =
+                    '<em>Preview will appear here after clicking "Preview Images"</em>'
+                showStatus('✅ Content cleared', 'success')
+            }
+
+            function copyToClipboard() {
+                noteInput.select()
+                document.execCommand('copy')
+                showStatus('✅ Content copied to clipboard', 'success')
+            }
+
+            // Add character count
+            noteInput.addEventListener('input', function () {
+                const charCount = noteInput.value.length
+                const wordCount = noteInput.value
+                    .trim()
+                    .split(/\s+/)
+                    .filter((w) => w.length > 0).length
+                console.log(`Characters: ${charCount}, Words: ${wordCount}`)
+            })
+        </script>
+    </body>
+</html>
