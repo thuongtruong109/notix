@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.3](https://github.com/thuongtruong1009/notix/releases/tag/v2.3) - 2025
+
+### Added
+
+-   Markdown syntax support and preview mode
+
 ## [2.2](https://github.com/thuongtruong1009/notix/releases/tag/v2.2) - 2025
 
 ### Added

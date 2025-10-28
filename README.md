@@ -40,6 +40,8 @@
 ✔️ Search notes by name <br/>
 ✔️ Update note data<br/>
 ✔️ Real-time sync notes data between tabs <br/>
+✔️ **Insert image to note**: Auto-preview inline like MS Word (WYSIWYG) <br/>
+✔️ **Markdown preview**: Auto-render markdown syntax with toggle preview mode <br/>
 
 ## 🎯 Todo
 
@@ -48,7 +50,8 @@
 -   [ ] Password protection for secret notes
 -   [ ] Detect language translation of note text
 -   [ ] Export/import notes backup data
--   [ ] Insert image to text
+-   [x] Insert image to text (paste via Ctrl+V)
+-   [x] Markdown preview mode
 -   [ ] Text editor tool panel
 -   [ ] Localization
 

@@ -180,8 +180,15 @@
             </div>
             <section id="note_panel">
                 <div>
-                    <textarea id="note" spellcheck="false"></textarea>
+                    <div
+                        id="note"
+                        contenteditable="true"
+                        spellcheck="false"
+                        data-placeholder="Type your note here..."
+                    ></div>
+                    <div id="markdown_preview" class="markdown-preview"></div>
                 </div>
+                <!-- preview toggle removed: preview is now controlled by the eye icon in the note header -->
             </section>
         </main>
 
