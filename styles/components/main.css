@@ -515,7 +515,6 @@ main > #list_panel > ul > li .checkbox_item:checked:after {
 }
 
 /* checkbox effect */
-
 main > #list_panel > ul > li label::after {
     content: '';
     position: absolute;
@@ -584,7 +583,6 @@ main #note_control {
 
 main #note_control li {
     margin-left: 0;
-    /* padding: 0.2rem 0.4rem; */
     width: 1.5rem;
     height: 1.5rem;
     display: flex;
@@ -592,6 +590,14 @@ main #note_control li {
     align-items: center;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+}
+
+main #note_control li:hover {
+    transform: scale(1.15);
+}
+
+main #note_control li:active {
+    transform: scale(0.95);
 }
 
 /* Eye preview icon */
@@ -625,21 +631,19 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     transform: translateY(-50%) scale(0.95);
 }
 
-/* Eye icon in note header - placed before note name */
 .note_head_panel .eye_note_btn,
 .note_head_panel #note_eye_icon {
-    width: 1.7rem;
-    height: 1.7rem;
+    width: 1.6rem;
+    height: 1.6rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    opacity: 0.6;
-    padding: 0.35rem;
+    opacity: 1;
+    padding: 0.3rem;
     border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 0.4rem;
-    background: linear-gradient(145deg, #f0f0f0, #fafafa);
-    box-shadow: 0.5px 0.5px 1.5px rgba(0, 0, 0, 0.04),
-        -0.5px -0.5px 1.5px rgba(255, 255, 255, 0.3);
+    border-radius: 0.45rem;
+    background: #fafafa;
     flex-shrink: 0;
+    filter: grayscale(0%) brightness(1);
 }
 
 .note_head_panel .eye_note_btn:hover,
@@ -649,10 +653,9 @@ main > #list_panel > ul > li .eye_preview_btn:active {
         -1px -1px 2px rgba(255, 255, 255, 0.4);
 }
 
-/* Active state when in preview mode */
 .note_head_panel .eye_note_btn.active,
 .note_head_panel #note_eye_icon.active {
-    opacity: 0.9;
-    background: linear-gradient(145deg, #e8f7f5, #f2fbfa);
-    color: #27ae60 !important;
+    opacity: 1;
+    background: linear-gradient(145deg, #e0f5f0, #eef9f6);
+    border-color: rgba(39, 174, 96, 0.2);
 }

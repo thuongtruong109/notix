@@ -622,6 +622,12 @@ const dynamicImport = async (path) => {
 
     let noteEyeIcon = document.getElementById('note_eye_icon')
     if (noteEyeIcon) {
+        // Set initial icon based on current mode (default is edit mode)
+        if (!isPreviewMode) {
+            noteEyeIcon.src = './icons/edit.svg'
+            noteEyeIcon.title = 'Edit Mode - Click to Preview'
+        }
+
         noteEyeIcon.onclick = () => {
             if (!currentNoteData || !currentNoteData.id) return
             togglePreview()
@@ -794,14 +800,22 @@ const dynamicImport = async (path) => {
             updateMarkdownPreview()
             if (previewToggle) previewToggle.classList.add('active')
             // Update eye icon to show active preview state
-            if (noteEyeIcon) noteEyeIcon.classList.add('active')
+            if (noteEyeIcon) {
+                noteEyeIcon.classList.add('active')
+                noteEyeIcon.src = './icons/eye.png'
+                noteEyeIcon.title = 'Preview Mode - Click to Edit'
+            }
         } else {
             noteInput.style.display = 'block'
             markdownPreview.style.display = 'none'
             markdownPreview.classList.remove('preview-active')
             if (previewToggle) previewToggle.classList.remove('active')
-            // Update eye icon to show edit state
-            if (noteEyeIcon) noteEyeIcon.classList.remove('active')
+            // Update icon to show edit state (pencil icon)
+            if (noteEyeIcon) {
+                noteEyeIcon.classList.remove('active')
+                noteEyeIcon.src = './icons/edit.svg'
+                noteEyeIcon.title = 'Edit Mode - Click to Preview'
+            }
 
             // Restore cursor position after switching back to edit
             if (savedCursorBeforePreview != null) {
@@ -934,39 +948,73 @@ const dynamicImport = async (path) => {
         })
     }
 
-    // note information
+    // ========== Note Information Modal ==========
+    // Create reusable modal instance for note statistics
+    let statsModal = null
+
+    const initStatsModal = () => {
+        if (!statsModal) {
+            statsModal = new Modal({
+                id: 'stats-modal',
+                title: 'Note Statistics',
+                content: '',
+            })
+        }
+    }
+
     noteInformation.onclick = async () => {
-        let totalLines =
-            getEditorText() === '' ? 0 : getEditorText().split('\n').length
-        let totalWords = getEditorText().trim().split(/[\s]+/).length
-        let totalSizes = new Blob([getEditorContent()]).size / 1000 + ' kb'
-        let lastUpdate = calLastUpdate(currentNoteData.lastUpdate)
+        initStatsModal()
 
-        let modalContent = document.getElementById('modal_content')
+        // Calculate statistics
+        const editorText = getEditorText()
+        const editorContent = getEditorContent()
 
-        modalContent.innerHTML = `<ul>
-            <li><span>Total lines: </span>${totalLines}</li>
-            <li><span>Total words: </span>${totalWords}</li>
-            <li><span>Total size: </span>${totalSizes}</li>
-            <li><span>Last update: </span>${lastUpdate}</li>
-        </ul>`
+        // Lines: count actual line breaks
+        const totalLines = editorText === '' ? 0 : editorText.split('\n').length
 
-        let title = document.getElementById('modal_title')
-        title.innerText = 'Statistics'
+        // Words: split by whitespace and filter empty strings
+        const words = editorText
+            .trim()
+            .split(/\s+/)
+            .filter((w) => w.length > 0)
+        const totalWords = editorText.trim() === '' ? 0 : words.length
 
-        let modal = document.getElementById('modal')
-        modal.classList.add(OBJ_KEYS.ACTIVE_CLASS)
+        // Characters: count all characters including spaces
+        const totalChars = editorText.length
 
-        var closeBtn = document.getElementsByClassName('modal_btn--close')[0]
-        closeBtn.onclick = () => {
-            modal.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
-        }
+        // Size: calculate actual byte size
+        const totalSize = (new Blob([editorText]).size / 1024).toFixed(2)
 
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                modal.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
-            }
-        }
+        const lastUpdate = calLastUpdate(currentNoteData.lastUpdate)
+
+        // Build enhanced content with better structure
+        const content = `
+            <ul>
+                <li>
+                    <span>Lines</span>
+                    <span>${totalLines}</span>
+                </li>
+                <li>
+                    <span>Words</span>
+                    <span>${totalWords}</span>
+                </li>
+                <li>
+                    <span>Characters</span>
+                    <span>${totalChars}</span>
+                </li>
+                <li>
+                    <span>Size</span>
+                    <span>${totalSize} KB</span>
+                </li>
+                <li>
+                    <span>Last Updated</span>
+                    <span>${lastUpdate}</span>
+                </li>
+            </ul>
+        `
+
+        statsModal.setContent(content)
+        statsModal.open()
     }
 
     // audio text
