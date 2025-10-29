@@ -322,7 +322,6 @@ const dynamicImport = async (path) => {
         if (notesList.length > 0) {
             emptyImage.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
             list.classList.remove('inactive')
-            deleteBtn.style.display = 'flex'
             searchBtn.style.display = 'flex'
         } else {
             emptyImage.classList.add(OBJ_KEYS.ACTIVE_CLASS)
@@ -333,9 +332,13 @@ const dynamicImport = async (path) => {
     }
 
     const deleteSelectedNotes = () => {
-        removesList.length > 0
-            ? deleteBtn.classList.remove('disabled')
-            : deleteBtn.classList.add('disabled')
+        if (removesList.length > 0) {
+            deleteBtn.classList.remove('disabled')
+            deleteBtn.style.display = 'flex'
+        } else {
+            deleteBtn.classList.add('disabled')
+            deleteBtn.style.display = 'none'
+        }
 
         deleteBtn.onclick = () => {
             for (let currentSelect of removesList) {
@@ -344,6 +347,7 @@ const dynamicImport = async (path) => {
                     (currentItem) => currentItem.id !== currentSelect
                 )
             }
+            removesList = []
             dispatchNotesList()
             loadNotesList()
         }
@@ -751,6 +755,13 @@ const dynamicImport = async (path) => {
             const markdownContent = getEditorText()
             const htmlContent = parseMarkdown(markdownContent)
             markdownPreview.innerHTML = htmlContent
+
+            // Add/remove empty class for placeholder styling
+            if (!markdownContent.trim()) {
+                markdownPreview.classList.add('empty')
+            } else {
+                markdownPreview.classList.remove('empty')
+            }
         }
     }
 

@@ -72,14 +72,19 @@ main > #note_panel > div > #note {
     white-space: pre-wrap;
 }
 
-/* Placeholder for contenteditable */
 main > #note_panel > div > #note:empty:before {
     content: attr(data-placeholder);
-    color: #999;
+    color: #95a5a6;
     font-style: italic;
+    opacity: 0.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1rem;
+    pointer-events: none;
 }
 
-/* Images in contenteditable editor */
 main > #note_panel > div > #note img {
     max-width: 100%;
     height: auto;
@@ -119,6 +124,24 @@ main > #note_panel > div > .markdown-preview {
 
 main > #note_panel > div > .markdown-preview.preview-active {
     background-color: rgba(232, 247, 245, 0.5);
+}
+
+main > #note_panel > div > .markdown-preview.empty::before {
+    content: '📝 Nothing to preview yet';
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+    width: 100%;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.85;
+    text-align: center;
+    pointer-events: none;
+    letter-spacing: 0.02em;
 }
 
 main > #note_panel > div > .markdown-preview h1,
@@ -271,7 +294,6 @@ main > #note_panel > div > .markdown-preview a:hover {
     text-decoration: underline;
 }
 
-/* Image preview support in notes */
 main > #note_panel img,
 main > #note_panel > div > .markdown-preview img {
     max-width: 100%;
@@ -281,7 +303,6 @@ main > #note_panel > div > .markdown-preview img {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Preview Toggle Button */
 main > #note_panel .preview-toggle {
     position: absolute;
     bottom: 1rem;
@@ -660,7 +681,6 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     border-color: rgba(39, 174, 96, 0.2);
 }
 
-/* Mode Toast Notification */
 .mode-toast {
     position: absolute;
     bottom: 0.4rem;
