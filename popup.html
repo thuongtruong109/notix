@@ -237,7 +237,29 @@
                 <ul>
                     <li class="audio_options">
                         <span>Choose a voice</span>
-                        <select id="voice"></select>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select" id="voice-select">
+                                <div class="custom-select__trigger">
+                                    <span>Select a voice</span>
+                                    <svg
+                                        class="custom-select__arrow"
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 12 12"
+                                    >
+                                        <path
+                                            fill="currentColor"
+                                            d="M6 9L1 4h10z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="custom-options">
+                                    <!-- Options will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            <!-- Keep hidden select for compatibility -->
+                            <select id="voice" style="display: none"></select>
+                        </div>
                     </li>
                     <li>
                         <span>Audio volumn</span>

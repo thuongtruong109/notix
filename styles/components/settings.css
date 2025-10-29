@@ -35,12 +35,191 @@
     white-space: nowrap;
 }
 
-.settings_content .audio_options select {
+.settings_content .audio_options {
+    position: relative;
+}
+
+/* Custom Select Wrapper */
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
     max-width: 12rem;
-    border: 1px solid #c2c2c2;
-    padding: 0.1rem 0.2rem;
-    border-radius: 0.25rem;
+}
+
+/* Custom Select Container */
+.custom-select {
+    position: relative;
+    width: 100%;
+    user-select: none;
+}
+
+/* Select Trigger/Button */
+.custom-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0.3rem;
+    background: linear-gradient(145deg, #fafafa, #ffffff);
+    box-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.06),
+        -2px -2px 4px rgba(255, 255, 255, 0.6);
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    color: #2c3e50;
+    gap: 0.4rem;
+}.custom-select__trigger:hover {
+    border-color: rgba(52, 152, 219, 0.3);
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.08),
+        -2px -2px 5px rgba(255, 255, 255, 0.7),
+        0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.custom-select.open .custom-select__trigger {
+    border-color: rgba(52, 152, 219, 0.5);
+    box-shadow:
+        inset 1px 1px 3px rgba(0, 0, 0, 0.08),
+        inset -1px -1px 3px rgba(255, 255, 255, 0.5),
+        0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.custom-select__trigger span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Arrow Icon */
+.custom-select__arrow {
+    width: 10px;
+    height: 10px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    color: #2c3e50;
+}
+
+.custom-select.open .custom-select__arrow {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Options Container */
+.custom-options {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    right: 0;
+    max-height: 0;
+    overflow: hidden;
+    background: linear-gradient(145deg, #ffffff, #fafafa);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0.3rem;
+    box-shadow:
+        3px 3px 8px rgba(0, 0, 0, 0.08),
+        -2px -2px 6px rgba(255, 255, 255, 0.6);
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.custom-select.open .custom-options {
+    max-height: 180px;
+    overflow-y: auto;
+    opacity: 1;
+    transform: translateY(0);
+}/* Individual Option */
+.custom-option {
+    padding: 0.45rem 0.55rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.custom-option:last-child {
+    border-bottom: none;
+}
+
+.custom-option:hover {
+    background: linear-gradient(145deg, #f0f8ff, #e8f4f8);
+    padding-left: 0.8rem;
+}
+
+.custom-option.active {
+    background: linear-gradient(145deg, #e8f4f8, #f0f8fc);
+    position: relative;
+}
+
+.custom-option.active::before {
+    content: '✓';
+    position: absolute;
+    left: 0.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #3498db;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+.custom-option.active {
+    padding-left: 1.4rem;
+}
+
+/* Option Name */
+.custom-option__name {
+    font-size: 0.8rem;
+    color: #2c3e50;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.custom-option.active .custom-option__name {
+    color: #3498db;
+    font-weight: 600;
+}
+
+/* Option Language Tag */
+.custom-option__lang {
+    font-size: 0.7rem;
+    color: #7f8c8d;
+    opacity: 0.8;
+    line-height: 1.2;
+}
+
+.custom-option.active .custom-option__lang {
+    color: #3498db;
+    opacity: 0.9;
+}
+
+/* Scrollbar for dropdown */
+.custom-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-options::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-options::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+.custom-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+/* Old select - hidden but kept for compatibility */
+.settings_content .audio_options select {
+    display: none;
+}
+    font-weight: 500;
 }
 
 .settings_content > ul:nth-child(1) li,
