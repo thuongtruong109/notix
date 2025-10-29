@@ -659,3 +659,70 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     background: linear-gradient(145deg, #e0f5f0, #eef9f6);
     border-color: rgba(39, 174, 96, 0.2);
 }
+
+/* Mode Toast Notification */
+.mode-toast {
+    position: absolute;
+    bottom: 0.4rem;
+    right: 0.4rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(248, 249, 250, 0.95)
+    );
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.25rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08),
+        -1px -1px 2px rgba(255, 255, 255, 0.6);
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #2c3e50;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(5px) scale(0.9);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    width: auto;
+}
+
+.mode-toast.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.mode-toast.preview-mode {
+    border-left: 2px solid #3498db;
+    color: #2980b9;
+}
+
+.mode-toast.edit-mode {
+    border-left: 2px solid #27ae60;
+    color: #229954;
+}
+
+.mode-toast::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.85);
+    }
+}
