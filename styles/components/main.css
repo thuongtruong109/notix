@@ -684,7 +684,7 @@ main > #list_panel > ul > li .eye_preview_btn:active {
 .mode-toast {
     position: absolute;
     bottom: 0.4rem;
-    right: 3rem;
+    right: 0.4rem;
     padding: 0.25rem 0.5rem;
     background: linear-gradient(
         145deg,
@@ -709,6 +709,11 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     gap: 0.25rem;
     white-space: nowrap;
     width: auto;
+}
+
+/* Move toast left when scroll to top button is visible */
+.mode-toast.shift-left {
+    right: 3rem;
 }
 
 .mode-toast.show {

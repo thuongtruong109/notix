@@ -778,6 +778,12 @@ const dynamicImport = async (path) => {
         toast.className = `mode-toast ${
             mode === 'preview' ? 'preview-mode' : 'edit-mode'
         }`
+
+        // Add shift-left class if scroll button is visible
+        if (scrollToTopBtn && scrollToTopBtn.classList.contains('show')) {
+            toast.classList.add('shift-left')
+        }
+
         toast.textContent = mode === 'preview' ? 'Preview Mode' : 'Edit Mode'
 
         // Append to the inner div container, not note_panel itself
