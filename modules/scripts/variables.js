@@ -13,6 +13,7 @@ export const ICONS = {
     RECORDING_STATE: './icons/recording.png',
     AUDIO_STATE: './icons/audio.png',
     MUTE_STATE: './icons/mute.png',
+    PREVIEW_STATE: './icons/eye.png',
 }
 
 export const OBJ_KEYS = {

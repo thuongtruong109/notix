@@ -72,14 +72,19 @@ main > #note_panel > div > #note {
     white-space: pre-wrap;
 }
 
-/* Placeholder for contenteditable */
 main > #note_panel > div > #note:empty:before {
     content: attr(data-placeholder);
-    color: #999;
+    color: #95a5a6;
     font-style: italic;
+    opacity: 0.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 0.85rem;
+    pointer-events: none;
 }
 
-/* Images in contenteditable editor */
 main > #note_panel > div > #note img {
     max-width: 100%;
     height: auto;
@@ -119,6 +124,24 @@ main > #note_panel > div > .markdown-preview {
 
 main > #note_panel > div > .markdown-preview.preview-active {
     background-color: rgba(232, 247, 245, 0.5);
+}
+
+main > #note_panel > div > .markdown-preview.empty::before {
+    content: '📝 Nothing to preview yet';
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+    width: 100%;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.85;
+    text-align: center;
+    pointer-events: none;
+    letter-spacing: 0.02em;
 }
 
 main > #note_panel > div > .markdown-preview h1,
@@ -271,7 +294,6 @@ main > #note_panel > div > .markdown-preview a:hover {
     text-decoration: underline;
 }
 
-/* Image preview support in notes */
 main > #note_panel img,
 main > #note_panel > div > .markdown-preview img {
     max-width: 100%;
@@ -281,7 +303,6 @@ main > #note_panel > div > .markdown-preview img {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Preview Toggle Button */
 main > #note_panel .preview-toggle {
     position: absolute;
     bottom: 1rem;
@@ -658,4 +679,122 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     opacity: 1;
     background: linear-gradient(145deg, #e0f5f0, #eef9f6);
     border-color: rgba(39, 174, 96, 0.2);
+}
+
+.mode-toast {
+    position: absolute;
+    bottom: 0.4rem;
+    right: 0.4rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(248, 249, 250, 0.95)
+    );
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.25rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08),
+        -1px -1px 2px rgba(255, 255, 255, 0.6);
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #2c3e50;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(5px) scale(0.9);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    width: auto;
+}
+
+/* Move toast left when scroll to top button is visible */
+.mode-toast.shift-left {
+    right: 3rem;
+}
+
+.mode-toast.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.mode-toast.preview-mode {
+    border-left: 2px solid #3498db;
+    color: #2980b9;
+}
+
+.mode-toast.edit-mode {
+    border-left: 2px solid #27ae60;
+    color: #229954;
+}
+
+.mode-toast::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.85);
+    }
+}
+
+/* Scroll to top button */
+.scroll-to-top {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: #e8e8e8;
+    color: #5a6c7d;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 4px #c5c5c5, -2px -2px 4px #ffffff;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+.scroll-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.scroll-to-top:hover {
+    background: #f0f0f0;
+    color: #3498db;
+    box-shadow: 3px 3px 6px #c5c5c5, -3px -3px 6px #ffffff;
+    transform: scale(1.1);
+}
+
+.scroll-to-top:active {
+    background: #e0e0e0;
+    box-shadow: inset 2px 2px 4px #c5c5c5, inset -2px -2px 4px #ffffff;
+    transform: scale(0.95);
 }

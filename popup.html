@@ -73,32 +73,11 @@
                     </div>
                 </div>
                 <ul id="note_header">
-                    <li id="settings_btn" title="settings">
-                        <img
-                            src="./icons/settings.png"
-                            alt="settings_icon"
-                            title="settings"
-                        />
-                    </li>
                     <li id="clear" title="clear">
                         <img
                             src="./icons/clear.png"
                             alt="clear_icon"
                             title="clear"
-                        />
-                    </li>
-                    <li id="copy_link" title="copy link">
-                        <img
-                            src="./icons/link.png"
-                            alt="copy_link_icon"
-                            title="copy link"
-                        />
-                    </li>
-                    <li id="capture" title="copy screenshot capture">
-                        <img
-                            src="./icons/capture.png"
-                            alt="capture_icon"
-                            title="copy screenshot capture"
                         />
                     </li>
                     <li id="download_img" title="export as image">
@@ -115,6 +94,20 @@
                             title="export as text"
                         />
                     </li>
+                    <li id="copy_link" title="copy link">
+                        <img
+                            src="./icons/link.png"
+                            alt="copy_link_icon"
+                            title="copy link"
+                        />
+                    </li>
+                    <li id="capture" title="copy screenshot capture">
+                        <img
+                            src="./icons/capture.png"
+                            alt="capture_icon"
+                            title="copy screenshot capture"
+                        />
+                    </li>
                     <li id="copy_text" title="copy text">
                         <img
                             src="./icons/copy.svg"
@@ -127,6 +120,13 @@
                             src="./icons/save.svg"
                             alt="save_icon"
                             title="save"
+                        />
+                    </li>
+                    <li id="settings_btn" title="settings">
+                        <img
+                            src="./icons/settings.png"
+                            alt="settings_icon"
+                            title="settings"
                         />
                     </li>
                 </ul>
@@ -191,10 +191,17 @@
                         id="note"
                         contenteditable="true"
                         spellcheck="false"
-                        data-placeholder="Type your note here..."
+                        data-placeholder="Write something..."
                     ></div>
                     <div id="markdown_preview" class="markdown-preview"></div>
                 </div>
+                <button
+                    id="scroll_to_top"
+                    class="scroll-to-top"
+                    title="Scroll to top"
+                >
+                    ↑
+                </button>
             </section>
         </main>
 
@@ -212,7 +219,7 @@
             <div class="settings_content">
                 <ul>
                     <li>
-                        <span>Auto save (default 1s)</span>
+                        <span>Auto save</span>
                         <label class="switch">
                             <input
                                 id="autosave_setting_toggle"
@@ -237,7 +244,26 @@
                 <ul>
                     <li class="audio_options">
                         <span>Choose a voice</span>
-                        <select id="voice"></select>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select" id="voice-select">
+                                <div class="custom-select__trigger">
+                                    <span>Select a voice</span>
+                                    <svg
+                                        class="custom-select__arrow"
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 12 12"
+                                    >
+                                        <path
+                                            fill="currentColor"
+                                            d="M6 9L1 4h10z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="custom-options"></div>
+                            </div>
+                            <select id="voice" style="display: none"></select>
+                        </div>
                     </li>
                     <li>
                         <span>Audio volumn</span>
