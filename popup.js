@@ -41,7 +41,8 @@ let logo = document.getElementById('logo'),
     noteInformation = document.getElementById('note_information'),
     voiceTextBtn = document.getElementById('voice_text'),
     audioTextBtn = document.getElementById('audio_text'),
-    settings = document.getElementById('settings')
+    settings = document.getElementById('settings'),
+    scrollToTopBtn = document.getElementById('scroll_to_top')
 
 let isPreviewMode = false
 
@@ -1113,4 +1114,42 @@ const dynamicImport = async (path) => {
             }
         })
     }
+})()
+
+// Scroll to top functionality
+;(() => {
+    if (!scrollToTopBtn) return
+
+    // Get the scrollable element (noteInput or markdownPreview depending on mode)
+    const getScrollableElement = () => {
+        return isPreviewMode ? markdownPreview : noteInput
+    }
+
+    // Show/hide scroll to top button based on scroll position
+    const handleScroll = () => {
+        const scrollableElement = getScrollableElement()
+        // Reduced threshold to 100px for better visibility in extension popup
+        if (scrollableElement && scrollableElement.scrollTop > 50) {
+            scrollToTopBtn.classList.add('show')
+        } else {
+            scrollToTopBtn.classList.remove('show')
+        }
+    }
+
+    // Scroll to top smoothly
+    scrollToTopBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const scrollableElement = getScrollableElement()
+        if (scrollableElement) {
+            scrollableElement.scrollTop = 0
+        }
+    })
+
+    // Add scroll event listeners to both note input and markdown preview
+    noteInput.addEventListener('scroll', handleScroll)
+    markdownPreview.addEventListener('scroll', handleScroll)
+
+    // Initial check
+    handleScroll()
 })()
