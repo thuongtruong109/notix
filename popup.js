@@ -538,11 +538,13 @@ const dynamicImport = async (path) => {
 
     searchBtn.onclick = () => {
         searchPanel.classList.add(OBJ_KEYS.ACTIVE_CLASS)
+        listHeader.classList.add('searching')
         searchInput.focus()
 
         searchCloseBtn.onclick = () => {
             searchInput.value = ''
             searchPanel.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
+            listHeader.classList.remove('searching')
             loadNotesList()
             notFoundImage.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
         }

@@ -17,8 +17,7 @@
             "48": "icons/icon48.png",
             "128": "icons/icon128.png"
         },
-        "default_popup": "popup.html",
-        "default_title": "Notix"
+        "default_title": "Notix - Open Extension Window"
     },
     "web_accessible_resources": [
         {

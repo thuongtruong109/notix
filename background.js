@@ -1,3 +1,5 @@
+let extensionWindowId = null
+
 chrome.runtime.onInstalled.addListener((_reason) => {
     chrome.tabs.create({
         url: 'index.html',
@@ -10,17 +12,50 @@ chrome.runtime.onInstalled.addListener((details) => {
     }
 })
 
-// Sync data between tabs
+chrome.action.onClicked.addListener(async () => {
+    if (extensionWindowId !== null) {
+        try {
+            const window = await chrome.windows.get(extensionWindowId)
+            chrome.windows.update(extensionWindowId, { focused: true })
+            return
+        } catch (error) {
+            extensionWindowId = null
+        }
+    }
+
+    chrome.windows.create(
+        {
+            url: 'popup.html',
+            type: 'popup',
+            width: 497,
+            height: 312,
+            focused: true,
+        },
+        (window) => {
+            extensionWindowId = window.id
+        }
+    )
+})
+
+chrome.windows.onBoundsChanged.addListener((window) => {
+    if (window.id === extensionWindowId) {
+        chrome.windows.update(extensionWindowId, { width: 497, height: 312 })
+    }
+})
+
+chrome.windows.onRemoved.addListener((windowId) => {
+    if (windowId === extensionWindowId) {
+        extensionWindowId = null
+    }
+})
+
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync') {
-        // Broadcast storage changes to all popup instances
         chrome.runtime
             .sendMessage({
                 type: 'STORAGE_CHANGED',
                 changes: changes,
             })
-            .catch(() => {
-                // Ignore errors if no popup is open
-            })
+            .catch(() => {})
     }
 })
