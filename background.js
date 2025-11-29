@@ -2,7 +2,7 @@ let extensionWindowId = null
 
 chrome.runtime.onInstalled.addListener((_reason) => {
     chrome.tabs.create({
-        url: 'index.html',
+        url: 'docs/index.html',
     })
 })
 

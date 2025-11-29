@@ -319,6 +319,99 @@ const dynamicImport = async (path) => {
 
     const dispatchNotesList = () => dispatchNotes(notesList)
 
+    // **************** Drag and Drop functionality ****************
+    let draggedElement = null
+    let draggedId = null
+
+    const handleDragStart = (e) => {
+        draggedElement = e.currentTarget
+        draggedId = e.currentTarget.id
+        e.currentTarget.classList.add('dragging')
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/html', e.currentTarget.innerHTML)
+    }
+
+    const handleDragOver = (e) => {
+        if (e.preventDefault) {
+            e.preventDefault()
+        }
+        e.dataTransfer.dropEffect = 'move'
+        return false
+    }
+
+    const handleDragEnter = (e) => {
+        if (e.currentTarget !== draggedElement) {
+            e.currentTarget.classList.add('drag-over')
+        }
+    }
+
+    const handleDragLeave = (e) => {
+        e.currentTarget.classList.remove('drag-over')
+    }
+
+    const handleDrop = (e) => {
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        }
+        e.preventDefault()
+
+        const dropTarget = e.currentTarget
+
+        if (draggedElement !== dropTarget) {
+            // Get positions
+            const allItems = Array.from(list.querySelectorAll('li'))
+            const draggedIndex = allItems.indexOf(draggedElement)
+            const dropIndex = allItems.indexOf(dropTarget)
+
+            // Reorder in DOM
+            if (draggedIndex < dropIndex) {
+                dropTarget.parentNode.insertBefore(
+                    draggedElement,
+                    dropTarget.nextSibling
+                )
+            } else {
+                dropTarget.parentNode.insertBefore(draggedElement, dropTarget)
+            }
+
+            // Reorder in notesList array
+            const draggedNote = notesList.find((note) => note.id == draggedId)
+            const dropNote = notesList.find((note) => note.id == dropTarget.id)
+
+            const draggedNoteIndex = notesList.indexOf(draggedNote)
+            const dropNoteIndex = notesList.indexOf(dropNote)
+
+            // Remove dragged note from array
+            notesList.splice(draggedNoteIndex, 1)
+
+            // Insert at new position
+            const newDropIndex = notesList.indexOf(dropNote)
+            if (draggedNoteIndex < dropNoteIndex) {
+                notesList.splice(newDropIndex + 1, 0, draggedNote)
+            } else {
+                notesList.splice(newDropIndex, 0, draggedNote)
+            }
+
+            // Save the new order
+            dispatchNotesList()
+        }
+
+        dropTarget.classList.remove('drag-over')
+        return false
+    }
+
+    const handleDragEnd = (e) => {
+        e.currentTarget.classList.remove('dragging')
+
+        // Remove drag-over class from all items
+        const allItems = list.querySelectorAll('li')
+        allItems.forEach((item) => {
+            item.classList.remove('drag-over')
+        })
+
+        draggedElement = null
+        draggedId = null
+    }
+
     const listApperanceStyle = () => {
         if (notesList.length > 0) {
             emptyImage.classList.remove(OBJ_KEYS.ACTIVE_CLASS)
@@ -367,6 +460,43 @@ const dynamicImport = async (path) => {
     const createNewNote = (id, title) => {
         let newItem = document.createElement('li')
         newItem.setAttribute('id', id)
+        newItem.classList.add('draggable-note')
+
+        // Add drag handle icon OUTSIDE button - THIS is the only draggable element
+        let dragHandle = document.createElement('span')
+        dragHandle.classList.add('drag-handle')
+        dragHandle.innerHTML = '☰'
+        dragHandle.setAttribute('title', 'Drag to reorder')
+        dragHandle.setAttribute('draggable', 'true')
+
+        // Add drag events to drag handle only
+        dragHandle.addEventListener('dragstart', (e) => {
+            draggedElement = newItem
+            draggedId = newItem.id
+            newItem.classList.add('dragging')
+            e.dataTransfer.effectAllowed = 'move'
+            e.dataTransfer.setData('text/html', newItem.innerHTML)
+        })
+
+        dragHandle.addEventListener('dragend', (e) => {
+            newItem.classList.remove('dragging')
+            const allItems = list.querySelectorAll('li')
+            allItems.forEach((item) => {
+                item.classList.remove('drag-over')
+            })
+            draggedElement = null
+            draggedId = null
+        })
+
+        // Prevent drag handle click from opening note
+        dragHandle.addEventListener('mousedown', (e) => {
+            e.stopPropagation()
+        })
+
+        dragHandle.addEventListener('click', (e) => {
+            e.stopPropagation()
+            e.preventDefault()
+        })
 
         let titleBtn = document.createElement('button')
         titleBtn.setAttribute('type', 'button')
@@ -452,6 +582,8 @@ const dynamicImport = async (path) => {
             }
         }
 
+        // Add drag handle first, then button
+        newItem.appendChild(dragHandle)
         newItem.appendChild(titleBtn)
 
         let checkboxItem = document.createElement('input')
@@ -476,6 +608,12 @@ const dynamicImport = async (path) => {
 
             deleteSelectedNotes()
         }
+
+        // Add drag and drop event listeners to the list item (for drop zone)
+        newItem.addEventListener('dragover', handleDragOver)
+        newItem.addEventListener('dragenter', handleDragEnter)
+        newItem.addEventListener('dragleave', handleDragLeave)
+        newItem.addEventListener('drop', handleDrop)
 
         listApperanceStyle()
 

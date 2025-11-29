@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Notix - Drag Handle Test Page</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 2rem;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                padding: 2rem;
+            }
+
+            h1 {
+                color: #667eea;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+
+            .intro {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-bottom: 2rem;
+                border-left: 4px solid #667eea;
+            }
+
+            .instructions {
+                background: #e8f4fd;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .instructions h3 {
+                color: #1976d2;
+                margin-bottom: 0.75rem;
+            }
+
+            .instructions ol {
+                margin-left: 1.5rem;
+                line-height: 1.8;
+            }
+
+            .note-list {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 0.5rem;
+                min-height: 300px;
+            }
+
+            .note-item {
+                background: white;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border: 2px solid #e0e0e0;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                position: relative;
+            }
+
+            .note-item:hover {
+                border-color: #667eea;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            }
+
+            .drag-handle {
+                width: 1.25rem;
+                height: 1.25rem;
+                font-size: 1rem;
+                color: #95a5a6;
+                cursor: grab;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                user-select: none;
+                opacity: 0;
+                transform: scale(0);
+                transition: all 0.2s ease;
+                flex-shrink: 0;
+            }
+
+            .note-item:hover .drag-handle {
+                opacity: 1;
+                transform: scale(1);
+            }
+            .drag-handle:hover {
+                color: #667eea;
+            }
+
+            .drag-handle:active {
+                cursor: grabbing;
+            }
+
+            .note-number {
+                background: #667eea;
+                color: white;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }
+
+            .note-title {
+                flex: 1;
+                font-weight: 500;
+                color: #333;
+                text-align: left;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .note-item.dragging {
+                opacity: 0.5;
+                transform: scale(0.95);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                background: rgba(102, 126, 234, 0.1);
+            }
+
+            .note-item.drag-over {
+                border: 2px dashed #667eea;
+                background: rgba(102, 126, 234, 0.1);
+                transform: scale(1.02);
+            }
+
+            .status {
+                background: #d4edda;
+                color: #155724;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border-left: 4px solid #28a745;
+                margin-bottom: 1rem;
+                display: none;
+            }
+
+            .status.show {
+                display: block;
+            }
+
+            .buttons {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            button {
+                flex: 1;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .btn-reset {
+                background: #6c757d;
+                color: white;
+            }
+
+            .btn-reset:hover {
+                background: #5a6268;
+            }
+
+            .btn-show-order {
+                background: #667eea;
+                color: white;
+            }
+
+            .btn-show-order:hover {
+                background: #5568d3;
+            }
+
+            .order-display {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-top: 1rem;
+                font-family: 'Courier New', monospace;
+                display: none;
+            }
+
+            .order-display.show {
+                display: block;
+            }
+
+            .highlight {
+                background: #fff3cd;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border-left: 4px solid #ffc107;
+                margin-bottom: 1rem;
+            }
+
+            .highlight strong {
+                color: #856404;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎯 Drag Handle Test Page</h1>
+
+            <div class="intro">
+                <p><strong>Test the new drag handle functionality!</strong></p>
+                <p>
+                    Now you can only drag notes by clicking and holding the drag
+                    handle (☰), not the entire item.
+                </p>
+            </div>
+
+            <div class="highlight">
+                <strong>⚠️ Important Changes:</strong>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem">
+                    <li>
+                        Drag handle (☰) only appears when hovering over a note
+                    </li>
+                    <li>You MUST click and hold the drag handle to drag</li>
+                    <li>
+                        Clicking on the note title or other areas won't drag the
+                        item
+                    </li>
+                    <li>Text is always left-aligned</li>
+                </ul>
+            </div>
+
+            <div class="instructions">
+                <h3>📝 How to Test:</h3>
+                <ol>
+                    <li>
+                        <strong>Hover</strong> over any note to see the drag
+                        handle (☰)
+                    </li>
+                    <li>
+                        <strong>Click and hold</strong> on the drag handle (☰) -
+                        NOT the note title
+                    </li>
+                    <li><strong>Drag</strong> the note up or down</li>
+                    <li><strong>Release</strong> over another note to drop</li>
+                    <li>Verify that clicking the note title doesn't drag</li>
+                </ol>
+            </div>
+
+            <div class="status" id="status">
+                ✅ Note reordered successfully!
+            </div>
+
+            <div class="test-section">
+                <h2>Interactive Note List</h2>
+                <ul class="note-list" id="noteList">
+                    <li class="note-item" data-id="1">
+                        <span class="drag-handle" draggable="true">☰</span>
+                        <span class="note-number">1</span>
+                        <span class="note-title"
+                            >📝 Meeting Notes - Project Alpha</span
+                        >
+                    </li>
+                    <li class="note-item" data-id="2">
+                        <span class="drag-handle" draggable="true">☰</span>
+                        <span class="note-number">2</span>
+                        <span class="note-title">💡 Ideas for New Feature</span>
+                    </li>
+                    <li class="note-item" data-id="3">
+                        <span class="drag-handle" draggable="true">☰</span>
+                        <span class="note-number">3</span>
+                        <span class="note-title">📋 Todo List - This Week</span>
+                    </li>
+                    <li class="note-item" data-id="4">
+                        <span class="drag-handle" draggable="true">☰</span>
+                        <span class="note-number">4</span>
+                        <span class="note-title">🔍 Research Notes</span>
+                    </li>
+                    <li class="note-item" data-id="5">
+                        <span class="drag-handle" draggable="true">☰</span>
+                        <span class="note-number">5</span>
+                        <span class="note-title">📚 Learning Resources</span>
+                    </li>
+                </ul>
+
+                <div class="buttons">
+                    <button class="btn-reset" onclick="resetOrder()">
+                        🔄 Reset Order
+                    </button>
+                    <button class="btn-show-order" onclick="showOrder()">
+                        👁️ Show Current Order
+                    </button>
+                </div>
+
+                <div class="order-display" id="orderDisplay"></div>
+            </div>
+        </div>
+
+        <script>
+            let draggedElement = null
+
+            function initDragAndDrop() {
+                const dragHandles = document.querySelectorAll('.drag-handle')
+                const noteItems = document.querySelectorAll('.note-item')
+
+                dragHandles.forEach((handle, index) => {
+                    const parentItem = handle.closest('.note-item')
+
+                    // Drag start from handle only
+                    handle.addEventListener('dragstart', (e) => {
+                        draggedElement = parentItem
+                        parentItem.classList.add('dragging')
+                        e.dataTransfer.effectAllowed = 'move'
+                        e.dataTransfer.setData(
+                            'text/html',
+                            parentItem.innerHTML
+                        )
+                    })
+
+                    // Drag end
+                    handle.addEventListener('dragend', () => {
+                        parentItem.classList.remove('dragging')
+                        const allItems = document.querySelectorAll('.note-item')
+                        allItems.forEach((item) => {
+                            item.classList.remove('drag-over')
+                        })
+                        draggedElement = null
+                    })
+
+                    // Prevent default click
+                    handle.addEventListener('click', (e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                    })
+                })
+
+                // Drop zones on note items
+                noteItems.forEach((item) => {
+                    item.addEventListener('dragover', handleDragOver)
+                    item.addEventListener('dragenter', handleDragEnter)
+                    item.addEventListener('dragleave', handleDragLeave)
+                    item.addEventListener('drop', handleDrop)
+                })
+            }
+
+            function handleDragOver(e) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
+                e.dataTransfer.dropEffect = 'move'
+                return false
+            }
+
+            function handleDragEnter(e) {
+                if (e.currentTarget !== draggedElement) {
+                    e.currentTarget.classList.add('drag-over')
+                }
+            }
+
+            function handleDragLeave(e) {
+                e.currentTarget.classList.remove('drag-over')
+            }
+
+            function handleDrop(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation()
+                }
+                e.preventDefault()
+
+                const dropTarget = e.currentTarget
+
+                if (draggedElement && draggedElement !== dropTarget) {
+                    const noteList = document.getElementById('noteList')
+                    const allItems = Array.from(
+                        noteList.querySelectorAll('.note-item')
+                    )
+                    const draggedIndex = allItems.indexOf(draggedElement)
+                    const dropIndex = allItems.indexOf(dropTarget)
+
+                    if (draggedIndex < dropIndex) {
+                        dropTarget.parentNode.insertBefore(
+                            draggedElement,
+                            dropTarget.nextSibling
+                        )
+                    } else {
+                        dropTarget.parentNode.insertBefore(
+                            draggedElement,
+                            dropTarget
+                        )
+                    }
+
+                    showStatus()
+                    updateNumbers()
+                }
+
+                dropTarget.classList.remove('drag-over')
+                return false
+            }
+
+            function showStatus() {
+                const status = document.getElementById('status')
+                status.classList.add('show')
+                setTimeout(() => {
+                    status.classList.remove('show')
+                }, 2000)
+            }
+
+            function updateNumbers() {
+                const noteItems = document.querySelectorAll('.note-item')
+                noteItems.forEach((item, index) => {
+                    const numberSpan = item.querySelector('.note-number')
+                    numberSpan.textContent = index + 1
+                })
+            }
+
+            function resetOrder() {
+                const noteList = document.getElementById('noteList')
+                const items = Array.from(
+                    noteList.querySelectorAll('.note-item')
+                )
+
+                items.sort((a, b) => {
+                    return parseInt(a.dataset.id) - parseInt(b.dataset.id)
+                })
+
+                items.forEach((item) => noteList.appendChild(item))
+                updateNumbers()
+
+                const orderDisplay = document.getElementById('orderDisplay')
+                orderDisplay.classList.remove('show')
+            }
+
+            function showOrder() {
+                const noteList = document.getElementById('noteList')
+                const items = Array.from(
+                    noteList.querySelectorAll('.note-item')
+                )
+                const orderDisplay = document.getElementById('orderDisplay')
+
+                let orderText = '<strong>Current Order:</strong><br><br>'
+                items.forEach((item, index) => {
+                    const title = item.querySelector('.note-title').textContent
+                    orderText += `${index + 1}. ${title}<br>`
+                })
+
+                orderDisplay.innerHTML = orderText
+                orderDisplay.classList.add('show')
+            }
+
+            // Initialize drag and drop on page load
+            initDragAndDrop()
+        </script>
+    </body>
+</html>

@@ -5,6 +5,8 @@
 ### Added
 
 -   Markdown syntax support and preview mode
+-   Migrate default popup to extension window
+-   Drag-and-drop to reorder notes
 
 ## [2.2](https://github.com/thuongtruong1009/notix/releases/tag/v2.2) - 2025
 

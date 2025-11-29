@@ -42,6 +42,7 @@
 ✔️ Real-time sync notes data between tabs <br/>
 ✔️ Markdown syntax support with toggle mode <br/>
 ✔️ Scroll to top button <br/>
+✔️ Drag and drop to reorder notes <br/>
 
 ## 🎯 Todo
 

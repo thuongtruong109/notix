@@ -426,6 +426,7 @@ main > #list_panel > ul > li button:after {
 main > #list_panel > ul > li:hover button {
     color: #ffffff;
     border: 1px solid var(--teal);
+    padding-left: 2.25rem;
 }
 
 main > #list_panel > ul > li.choiced button:before,
@@ -449,6 +450,12 @@ main > #list_panel > ul > li button input[type='text'] {
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
+    text-align: left;
+}
+
+main > #list_panel > ul > li button .note_title {
+    flex: 1;
+    min-width: 0;
 }
 
 main > #list_panel > ul > li button input[type='text'] {
@@ -797,4 +804,80 @@ main > #list_panel > ul > li .eye_preview_btn:active {
     background: #e0e0e0;
     box-shadow: inset 2px 2px 4px #c5c5c5, inset -2px -2px 4px #ffffff;
     transform: scale(0.95);
+}
+
+/* ========== Drag and Drop Styles ========== */
+
+/* Drag handle icon - NOW outside button as direct child of li */
+main > #list_panel > ul > li > .drag-handle {
+    position: absolute;
+    left: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #95a5a6;
+    cursor: grab;
+    transition: all 0.2s ease;
+    user-select: none;
+    z-index: 10;
+}
+
+main > #list_panel > ul > li:hover > .drag-handle {
+    display: flex;
+}
+
+main > #list_panel > ul > li > .drag-handle:hover {
+    color: var(--teal);
+}
+
+main > #list_panel > ul > li > .drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Draggable note item */
+main > #list_panel > ul > li.draggable-note {
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+/* When item is being dragged */
+main > #list_panel > ul > li.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 0.25rem;
+}
+
+main > #list_panel > ul > li.dragging button {
+    cursor: grabbing !important;
+    pointer-events: none;
+}
+
+/* When dragged item is over another item */
+main > #list_panel > ul > li.drag-over {
+    border: 2px dashed var(--teal);
+    border-radius: 0.25rem;
+    background: rgba(52, 152, 219, 0.08);
+    transform: scale(1.02);
+}
+
+main > #list_panel > ul > li.drag-over button {
+    border-color: var(--teal);
+}
+
+/* Smooth transitions for reordering */
+main > #list_panel > ul > li {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Ensure drag handle appears when dragging */
+main > #list_panel > ul > li.dragging > .drag-handle {
+    display: flex;
+    cursor: grabbing;
 }
